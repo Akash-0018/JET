@@ -1,0 +1,531 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Game Hub - JET{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --primary: navy;
+    --primary-dark: #00005a;
+    --primary-light: rgba(0, 0, 128, 0.15);
+    --accent: orangered;
+    --accent-light: rgba(255, 69, 0, 0.15);
+    --card-transition: all 0.3s ease;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .page-header {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+
+  .page-title::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--accent);
+  }
+
+  .breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+  
+  .breadcrumb-item a {
+    color: var(--primary);
+  }
+  
+  .breadcrumb-item.active {
+    color: #6c757d;
+  }
+
+  .leaderboard-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: var(--card-transition);
+  }
+
+  .leaderboard-btn:hover {
+    background-color: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--card-hover-shadow);
+  }
+
+  .leaderboard-btn i {
+    margin-right: 0.5rem;
+  }
+
+  .games-container {
+    padding: 1rem;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .game-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: var(--card-transition);
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+  }
+
+  .game-img-wrapper {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+  }
+
+  .game-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .game-card:hover .game-img {
+    transform: scale(1.1);
+  }
+
+  .game-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .game-card-body {
+    padding: 1.25rem;
+  }
+
+  .game-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .game-desc {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .play-btn {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--card-transition);
+    width: 100%;
+    text-align: center;
+  }
+
+  .play-btn:hover {
+    background-color: var(--accent);
+    color: white;
+    text-decoration: none;
+  }
+
+  .play-btn i {
+    margin-right: 0.5rem;
+  }
+
+  .game-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .game-difficulty {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .star-rating {
+    color: gold;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .games-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+  }
+
+  @media (max-width: 576px) {
+    .games-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Game limits notification */
+  .game-limit-alert {
+    background-color: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.25rem;
+  }
+
+  .game-limit-alert p {
+    margin: 0;
+    color: var(--primary);
+    font-size: 0.9rem;
+  }
+
+  .game-limit-alert strong {
+    color: var(--primary-dark);
+  }
+</style>
+
+<div class="container mt-4 mb-5">
+  <!-- Breadcrumb and Page Title -->
+  <div class="page-header">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Game Hub</li>
+      </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="page-title">Game Hub</h1>
+      <a href="{% url 'leaderboard1' %}" class="leaderboard-btn">
+        <i class="fas fa-trophy"></i>Leaderboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Game Limit Alert -->
+  <div class="game-limit-alert">
+    <p><strong>Daily Game Limit:</strong> You can play up to <strong>3 games</strong> within a 9-hour period. Choose wisely!</p>
+  </div>
+
+  <!-- Games Container -->
+  <div class="games-container">
+    <div class="games-grid" id="gamesGrid">      <!-- Tower of Hanoi -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/towersofhanoi.jpg' %}" alt="Tower of Hanoi" class="game-img">
+          <span class="game-badge">Logic</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Tower of Hanoi</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Medium</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Challenge your mind with this classic puzzle game. Move all disks to another tower.</p>
+          <a href="{% url 'towersofhanoi' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Snake -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/snake.jpg' %}" alt="Snake" class="game-img">
+          <span class="game-badge">Arcade</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Snake</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Easy</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Classic snake game - eat the food, grow longer, and avoid hitting walls or yourself!</p>
+          <a href="{% url 'snake' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Hangman -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/hangman.jpg' %}" alt="Hangman" class="game-img">
+          <span class="game-badge">Word</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Hangman</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Medium</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Guess the word letter by letter before the hangman is complete!</p>
+          <a href="{% url 'hangman' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Sudoku -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/sudoku.jpg' %}" alt="Sudoku" class="game-img">
+          <span class="game-badge">Puzzle</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Sudoku</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Hard</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Fill the grid with numbers 1-9 so each row, column, and region contains all digits.</p>
+          <a href="{% url 'sudoku' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Chess -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/chess.jpg' %}" alt="Chess" class="game-img">
+          <span class="game-badge">Strategy</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Chess</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Hard</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">The classic game of strategy and tactics. Challenge yourself with chess puzzles!</p>
+          <a href="{% url 'chess' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Memory/Match Cards -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/memory.jpg' %}" alt="Match Cards" class="game-img">
+          <span class="game-badge">Memory</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Match Cards</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Easy</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Test your memory by matching pairs of cards with mathematical concepts.</p>
+          <a href="{% url 'memory' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Quiz Time -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/quiz.jpg' %}" alt="Quiz Time" class="game-img">
+          <span class="game-badge">Knowledge</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Quiz Time</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Medium</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Test your knowledge with a variety of interesting questions across different topics.</p>
+          <a href="{% url 'quiz' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Math Sprint -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/Mathsprint.jpg' %}" alt="Math Sprint" class="game-img">
+          <span class="game-badge">Speed</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Math Sprint</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Medium</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Race against time to solve math problems quickly. Can you beat the AI?</p>
+          <a href="{% url 'mathsprint' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>      <!-- Guess the Word -->
+      <div class="game-card">
+        <div class="game-img-wrapper">
+          <img src="{% static 'games/number.jpg' %}" alt="Guess the Word" class="game-img">
+          <span class="game-badge">Guessing</span>
+        </div>
+        <div class="game-card-body">
+          <h3 class="game-title">Guess the Word</h3>
+          <div class="game-info">
+            <span class="game-difficulty">Difficulty: Easy</span>
+            <span class="star-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+              <i class="far fa-star"></i>
+            </span>
+          </div>
+          <p class="game-desc">Can you guess the mystery word with limited clues? Test your vocabulary!</p>
+          <a href="{% url 'guess' %}" class="play-btn"><i class="fas fa-play-circle"></i> Play Now</a>
+        </div>
+      </div>    </div>
+  </div>
+</div>
+
+<script>
+  const MAX_GAMES = 3; // Set the maximum number of games per user
+  const TIME_LIMIT = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
+  const userId = '{{ request.user.id }}'; // Get the current user's ID
+  const gameStartKeyPrefix = 'gameStartTime_';
+  const gameCountKeyPrefix = 'gameCount_';
+
+  // Get user-specific game start time and count
+  let gameStartTime = localStorage.getItem(gameStartKeyPrefix + userId);
+  let gameCount = parseInt(localStorage.getItem(gameCountKeyPrefix + userId)) || 0;
+
+  // Display the current game count in the game limit alert
+  document.addEventListener('DOMContentLoaded', function() {
+    const gameCountSpan = document.createElement('span');
+    gameCountSpan.classList.add('badge', 'badge-primary', 'ml-2');
+    gameCountSpan.textContent = `${gameCount}/${MAX_GAMES} games played today`;
+    document.querySelector('.game-limit-alert p').appendChild(gameCountSpan);
+  });
+
+  function resetDailyGameData() {
+    const today = new Date().toISOString().slice(0, 10);
+    const lastPlayedDate = localStorage.getItem('lastPlayedDate_' + userId);
+
+    if (lastPlayedDate !== today) {
+      localStorage.removeItem(gameCountKeyPrefix + userId);
+      localStorage.removeItem(gameStartKeyPrefix + userId);
+      gameCount = 0; // Reset game count
+      localStorage.setItem('lastPlayedDate_' + userId, today);
+    }
+  }
+
+  resetDailyGameData();
+
+  function playGame(gameUrl) {
+    if (gameCount < MAX_GAMES) {
+      if (!gameStartTime) {
+        gameStartTime = new Date().getTime();
+        localStorage.setItem(gameStartKeyPrefix + userId, gameStartTime);
+      } else {
+        const currentTime = new Date().getTime();
+        if (currentTime - gameStartTime > TIME_LIMIT) {
+          Swal.fire({
+            title: 'Time Limit Expired',
+            text: 'Your 9-hour playtime limit has expired. Please try again tomorrow.',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: 'var(--primary)'
+          });
+          return;
+        }
+      }
+
+      gameCount++;
+      localStorage.setItem(gameCountKeyPrefix + userId, gameCount);
+
+      window.location.href = gameUrl;
+    } else {
+      Swal.fire({
+        title: 'Daily Limit Reached',
+        text: 'You can only play a maximum of 3 games in a single day.',
+        icon: 'info',
+        confirmButtonText: 'OK',
+        confirmButtonColor: 'var(--primary)'
+      });
+    }
+  }
+
+  document.querySelectorAll('.play-btn').forEach(link => {
+    const gameUrl = link.getAttribute('href');
+    link.addEventListener('click', (event) => {
+      event.preventDefault(); // Prevent default link behavior
+      playGame(gameUrl); // Call the playGame function
+    });
+  });
+
+  // Shuffle game elements
+  const gamesGrid = document.getElementById('gamesGrid');
+  const games = Array.from(gamesGrid.children);
+  games.sort(() => Math.random() - 0.5);
+  games.forEach(game => gamesGrid.appendChild(game)); // Append in random order
+</script>
+
+<!-- Add SweetAlert2 for nicer alerts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}

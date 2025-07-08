@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Email with AI - JET{% endblock %}
+
+{% block content %}
+<style>
+  /* Animation for slide-in */
+  @keyframes slideInTop {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in-top {
+    animation: slideInTop 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  /* Style for breadcrumbs */
+  .breadcrumb {
+    box-shadow: var(--shadow-sm) !important;
+    transition: all var(--transition-speed) var(--transition-ease);
+  }
+
+  .breadcrumb:hover {
+    box-shadow: var(--shadow-md) !important;
+  }
+
+  .breadcrumb-item a {
+    color: var(--primary);
+    font-weight: 500;
+    transition: all var(--transition-speed) var(--transition-ease);
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-item a:hover {
+    text-decoration: none;
+    color: var(--secondary);
+  }
+
+  /* Generated content styling */
+  .generated-content {
+    border-left: 4px solid var(--secondary);
+  }
+
+  .generated-text {
+    white-space: pre-wrap;
+    font-family: "Courier New", monospace;
+    padding: 1rem;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid #dee2e6;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+  }
+  
+  .ai-prompt-icon {
+    color: var(--secondary);
+    margin-right: 0.5rem;
+  }
+
+  /* AI badge */
+  .ai-badge {
+    background-color: var(--secondary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    display: inline-flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) var(--transition-ease);
+  }
+
+  .ai-badge:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .ai-badge i {
+    margin-right: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .copy-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-ease);
+    font-size: 1rem;
+  }
+  
+  .copy-btn:hover {
+    color: var(--primary);
+  }
+  
+  .info-card {
+    border-left: 4px solid var(--primary);
+    background-color: var(--primary-light);
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1.5rem;
+  }
+  
+  .info-card p {
+    margin-bottom: 0;
+  }
+</style>
+
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="slide-in-top mb-4">
+    <ol class="breadcrumb bg-white py-2 px-3 rounded shadow-sm">
+      <li class="breadcrumb-item">
+        <a href="{% url 'dashboard' %}">
+          <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'inbox' %}">
+          <i class="fas fa-inbox mr-1"></i> Inbox
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <i class="fas fa-robot mr-1"></i> AI Email Generator
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Page Title -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="slide-in-top">
+      <h1 class="h3 mb-0">
+        <i class="fas fa-robot text-primary mr-2"></i>Generate Email with AI
+      </h1>
+      <p class="text-muted mt-2">Use AI to quickly generate professional email content</p>
+    </div>
+    <div>
+      <span class="ai-badge">
+        <i class="fas fa-brain"></i> Powered by AI
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Info Card -->
+    <div class="col-lg-12 mb-4 slide-in-top">
+      <div class="info-card">
+        <p><i class="fas fa-info-circle mr-2"></i> The AI assistant helps you craft professional emails based on your prompts. Simply provide details about what kind of email you need and let the AI generate a draft for you.</p>
+      </div>
+    </div>
+    
+    <!-- Form Card -->
+    <div class="col-lg-12 mb-4 slide-in-top">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+          <h3 class="h5 mb-0">
+            <i class="fas fa-pencil-alt text-primary mr-2"></i>Email Generator
+          </h3>
+        </div>
+        <div class="card-body">
+          <form method="post" action="{% url 'generate_ai' %}">
+            {% csrf_token %}
+            
+            <div class="row">
+              {% for field in form %}
+                {% if field.name != 'cc_users' and field.name != 'bcc_users' and field.name != 'message' %}
+                  <div class="col-md-6 form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            
+            <div class="form-group">
+              <label for="prompt" class="form-label">
+                <i class="fas fa-lightbulb ai-prompt-icon"></i> AI Prompt:
+              </label>
+              <input type="text" id="prompt" name="prompt" class="form-control" 
+                     placeholder="e.g., 'Write a professional thank you email for a job interview'">
+              <small class="form-text text-muted">Describe what kind of email you want the AI to generate</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.message.id_for_label }}" class="form-label">Additional Details:</label>
+              {{ form.message }}
+              <small class="form-text text-muted">Add any specific details or context the AI should include in the email</small>
+            </div>
+            
+            <div class="d-flex mt-4">
+              <button class="btn btn-primary mr-3" type="submit">
+                <i class="fas fa-magic mr-1"></i> Generate Email
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="insert-generated-content" onclick="insertGeneratedContent()" {% if not generated_text %}disabled{% endif %}>
+                <i class="fas fa-check mr-1"></i> Use Generated Content
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generated Content -->
+    {% if generated_text %}
+    <div class="col-lg-12 mb-4 fade-in">
+      <div class="card shadow-sm border-0 generated-content">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h3 class="h5 mb-0">
+            <i class="fas fa-envelope text-success mr-2"></i>Generated Email
+          </h3>
+          <div>
+            <button class="copy-btn mr-2" onclick="copyGeneratedText()" title="Copy to clipboard">
+              <i class="fas fa-copy"></i>
+            </button>
+            <span class="badge badge-success px-3 py-2">Ready to use</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Subject:</label>
+            <div class="p-3 bg-light rounded">{{ subject }}</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Content:</label>
+            <div id="generated-text" class="generated-text">
+              {{ generated_text }}
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-primary" onclick="insertGeneratedContent()">
+              <i class="fas fa-paper-plane mr-1"></i> Continue to Email Form
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function insertGeneratedContent() {
+    const generatedText = document.getElementById('generated-text').textContent;
+    const url = "{% url 'email_form' %}";
+    const params = new URLSearchParams({ message: generatedText });
+    window.location.href = `${url}?${params.toString()}`;
+  }
+  
+  function copyGeneratedText() {
+    const generatedText = document.getElementById('generated-text').textContent;
+    navigator.clipboard.writeText(generatedText).then(function() {
+      // Show a temporary success message
+      const copyBtn = document.querySelector('.copy-btn');
+      const originalIcon = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+      copyBtn.style.color = '#28a745';
+      
+      setTimeout(function() {
+        copyBtn.innerHTML = originalIcon;
+        copyBtn.style.color = '';
+      }, 2000);
+    });
+  }
+</script>
+{% endblock %}

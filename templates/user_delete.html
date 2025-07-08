@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete User - JET{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: navy;
+        --primary-dark: #00005a;
+        --primary-light: rgba(0, 0, 128, 0.15);
+        --accent: orangered;
+        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .warning-icon {
+        font-size: 4rem;
+        color: #dc3545;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_list' %}">Users</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_detail' user.id %}">{{ user.get_full_name|default:user.username }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete User</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="card-title mb-3">Delete User Account</h3>
+                    <p class="card-text mb-4">
+                        Are you sure you want to delete the account for <strong>{{ user.get_full_name|default:user.username }}</strong>?
+                        This action cannot be undone and will permanently remove all data associated with this account.
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4 py-2">
+                            <i class="fas fa-trash-alt mr-2"></i>Delete Account
+                        </button>
+                        <a href="{% url 'user_detail' user.id %}" class="btn btn-outline-secondary px-4 py-2 ml-2">
+                            <i class="fas fa-arrow-left mr-2"></i>Go Back
+                        </a>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'user_list' %}" class="text-primary">
+                    <i class="fas fa-users mr-2"></i>Return to User Directory
+                </a>
+            </div>
+        </div>
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+.back-button {
+  position: fixed;
+  top: 30px;
+  left: 5px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top:40px;
+}
+
+.back-button::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23000080'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  background-position: center;
+  background-repeat : no-repeat;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.back-button:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23ff4500'/%3E%3C/svg%3E");
+}
+    .footer {
+     
+     bottom: 0%;
+     width: 100%;
+     height: 62px; 
+     margin-bottom: 0px;
+     color: white;
+     background-color: navy;
+     padding-left: 690px;
+     padding-top: 5px;
+     padding-bottom: 0px;
+    }
+    .footer p{
+     font-size: 15px;
+     font-weight: 600;
+     margin-bottom: 0px;
+     margin-left: 0px;
+     margin-right: 0px;
+     padding-top: 15px;
+     padding-right: 400px;
+     color: #fff;
+    }
+    </style>
+{% endblock %} {% endcomment %}

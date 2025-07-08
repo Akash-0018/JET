@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Academic Leaderboard - JET{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: navy;
+        --primary-dark: #00005a;
+        --primary-light: rgba(0, 0, 128, 0.15);
+        --accent: orangered;
+        --accent-light: rgba(255, 69, 0, 0.15);
+        --card-transition: all 0.3s ease;
+        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .page-header {
+        background-color: #fff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .page-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: var(--accent);
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary);
+    }
+    
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+
+    .leaderboard-card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: var(--card-shadow);
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .leaderboard-card .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .leaderboard-search {
+        max-width: 300px;
+        border-radius: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 1rem;
+        padding-right: 2.5rem;
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+    }
+
+    .academic-table {
+        margin-bottom: 0;
+    }
+
+    .academic-table th {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+    }
+
+    .academic-table tbody tr {
+        transition: var(--card-transition);
+    }
+
+    .academic-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .rank-1 {
+        background: linear-gradient(135deg, #ffd700, #fca311);
+        color: #000;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    .rank-2 {
+        background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+        color: #000;
+        box-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+    }
+
+    .rank-3 {
+        background: linear-gradient(135deg, #cd7f32, #b87333);
+        color: #000;
+        box-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
+    }
+
+    .cert-badge, .course-badge {
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .cert-badge {
+        background-color: var(--primary-light);
+        color: var(--primary);
+    }
+    
+    .course-badge {
+        background-color: var(--accent-light);
+        color: var(--accent);
+    }
+
+    tr.gold {
+        background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    tr.silver {
+        background-color: rgba(192, 192, 192, 0.1);
+    }
+
+    tr.bronze {
+        background-color: rgba(205, 127, 50, 0.1);
+    }
+
+    .achievement-list {
+        padding-left: 0;
+        list-style-type: none;
+        margin-bottom: 0;
+    }
+
+    .achievement-list li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .achievement-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .achievement-list li i {
+        margin-right: 0.5rem;
+        color: var(--accent);
+    }
+
+    .achievement-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-left: 0.5rem;
+    }
+
+    .trophy-icon {
+        margin-right: 0.5rem;
+    }
+
+    .gold-icon {
+        color: #ffd700;
+    }
+
+    .silver-icon {
+        color: #c0c0c0;
+    }
+
+    .bronze-icon {
+        color: #cd7f32;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+    <!-- Breadcrumb and Page Title -->
+    <div class="page-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Academic Leaderboard</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Academic Leaderboard</h1>
+                <p class="text-muted mb-0">See how you stack up against other learners</p>
+            </div>
+            <div class="position-relative">
+                <input type="search" id="leaderboardSearch" class="form-control leaderboard-search" placeholder="Search users...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="leaderboard-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-graduation-cap text-primary mr-2"></i>
+                Learning Progress Rankings
+            </h5>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-primary active" id="allUsersBtn">All Users</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="myRankBtn">My Ranking</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table academic-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px;">Rank</th>
+                        <th>User</th>
+                        <th class="text-center">Certifications</th>
+                        <th class="text-center">Courses</th>
+                        <th>Recent Achievements</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in leaderboard %}
+                    <tr class="{% if entry.rank == 1 %}gold{% elif entry.rank == 2 %}silver{% elif entry.rank == 3 %}bronze{% endif %} {% if entry.username == request.user.username %}table-active{% endif %}">
+                        <td class="text-center">
+                            {% if entry.rank == 1 %}
+                                <span class="rank-badge rank-1">1</span>
+                            {% elif entry.rank == 2 %}
+                                <span class="rank-badge rank-2">2</span>
+                            {% elif entry.rank == 3 %}
+                                <span class="rank-badge rank-3">3</span>
+                            {% else %}
+                                {{ entry.rank }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ entry.username }}</strong>
+                            {% if entry.rank == 1 %}
+                                <i class="fas fa-crown gold-icon trophy-icon"></i>
+                            {% elif entry.rank == 2 %}
+                                <i class="fas fa-medal silver-icon trophy-icon"></i>
+                            {% elif entry.rank == 3 %}
+                                <i class="fas fa-award bronze-icon trophy-icon"></i>
+                            {% endif %}
+                            {% if entry.username == request.user.username %}
+                                <span class="badge badge-pill badge-primary ml-2">You</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="cert-badge">{{ entry.num_certifications }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="course-badge">{{ entry.num_courses }}</span>
+                        </td>
+                        <td>
+                            <ul class="achievement-list">
+                                {% if entry.certifications %}
+                                    {% for cert in entry.certifications|slice:":2" %}
+                                        <li>
+                                            <i class="fas fa-certificate"></i>
+                                            {{ cert.name }}
+                                            <span class="achievement-date">({{ cert.date_completed|date:"M d, Y" }})</span>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                {% if entry.courses %}
+                                    {% for course in entry.courses|slice:":2" %}
+                                        <li>
+                                            <i class="fas fa-book"></i>
+                                            {{ course.name }}
+                                            <span class="achievement-date">({{ course.date_completed|date:"M d, Y" }})</span>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                {% if not entry.certifications and not entry.courses %}
+                                    <li><i class="fas fa-info-circle"></i> No recent achievements</li>
+                                {% endif %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter by search
+        const searchInput = document.getElementById('leaderboardSearch');
+        const tableRows = document.querySelectorAll('#leaderboardTable tbody tr');
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            tableRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                row.style.display = rowText.includes(searchTerm) ? "" : "none";
+            });
+        });
+        
+        // Filter buttons - All Users vs My Rank
+        const allUsersBtn = document.getElementById('allUsersBtn');
+        const myRankBtn = document.getElementById('myRankBtn');
+        
+        allUsersBtn.addEventListener('click', function() {
+            allUsersBtn.classList.add('active');
+            myRankBtn.classList.remove('active');
+            
+            tableRows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            // Re-filter by search if there's a search term
+            if (searchInput.value) {
+                const searchTerm = searchInput.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (!rowText.includes(searchTerm)) {
+                        row.style.display = "none";
+                    }
+                });
+            }
+        });
+        
+        myRankBtn.addEventListener('click', function() {
+            myRankBtn.classList.add('active');
+            allUsersBtn.classList.remove('active');
+            
+            tableRows.forEach(row => {
+                if (!row.classList.contains('table-active')) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                }
+            });
+        });
+        
+        // Add hover details for achievements
+        const achievementItems = document.querySelectorAll('.achievement-list li');
+        achievementItems.forEach(item => {
+            // Create tooltip for each achievement on hover
+            item.setAttribute('data-toggle', 'tooltip');
+            item.setAttribute('data-placement', 'top');
+            item.setAttribute('title', 'Achievement completed ' + 
+                item.querySelector('.achievement-date').textContent.replace(/[()]/g, ''));
+            
+            // Add hover effect
+            item.style.cursor = 'pointer';
+            item.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0,0,0,0.05)';
+                this.style.borderRadius = '4px';
+                this.style.padding = '2px 5px';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.padding = '';
+            });
+        });
+        
+        // Initialize tooltips
+        if (typeof $().tooltip === 'function') {
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+    });
+</script>
+{% endblock %}

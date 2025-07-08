@@ -1,0 +1,789 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Script for home page enhancements -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Apply navy background to navbar
+    const navbar = document.getElementById('main-navbar');
+    if (navbar) {
+      navbar.style.backgroundColor = 'navy';
+      navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+    }
+    
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // Add animation to team members
+    const teamMembers = document.querySelectorAll('#our-team .row > div');
+    teamMembers.forEach((member, index) => {
+      member.style.animationDelay = `${index * 0.2}s`;
+    });
+    
+    // Ensure feature containers are in a single row
+    const slideIn = document.querySelector('.slide-in');
+    if (slideIn) {
+      slideIn.style.display = 'flex';
+      slideIn.style.flexWrap = 'nowrap';
+    }
+  });
+</script>
+
+<style>
+  /* Enhanced styling variables */
+  :root {
+    --hero-gradient: linear-gradient(135deg, rgba(0, 0, 128, 0.03) 0%, rgba(0, 0, 128, 0.05) 100%);
+    --button-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius: 20px;
+    --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Welcome section styling */
+  .aim {
+    text-align: center;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+  
+  .welcome-container {
+    position: relative;
+    color: white;
+    background: none;
+    box-shadow: none;
+    padding: 2rem 0;
+  }
+  
+  .welcome-text {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-bottom: 0;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .welcome-text span {
+    font-size: 30px;
+    opacity: 0.9;
+  }
+  
+  .subtext {
+    text-align: center;
+    font-size: 20px;
+    color: navy;
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
+  }
+    .banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    /* Removed the grey rectangle gradient and animation */
+  }
+    /* Content container styling */
+  .content-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+  
+  .content-container:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+  }
+  
+  .border-gradient {
+    position: relative;
+    z-index: 1;
+    border: none;
+  }
+  
+  .border-gradient:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, rgba(0, 0, 128, 0.05) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 128, 0.05) 100%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  /* Common section styling for consistency */
+  .section-heading {
+    color: navy;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 15px;
+  }
+  
+  .section-heading:after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 3px;
+    background: orangered;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  /* Enhanced container styling */
+  .content-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 40px 30px;
+    margin: 30px auto;
+    transition: all 0.4s ease;
+    border: none;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .content-container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, navy, transparent);
+    opacity: 0.7;
+  }
+  
+  .content-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Features section in a single row */
+  .slide-in {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+    gap: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) rgba(0, 0, 0, 0.1);
+  }
+  
+  .slide-in::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .slide-in::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  
+  .slide-in::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 10px;
+  }
+    .list-container {
+    flex: 0 0 24%;
+    min-width: 250px;
+    max-width: 280px;
+    margin: 10px 5px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .list-container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, navy, orangered);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+  }
+  
+  .list-container:hover:before {
+    transform: scaleX(1);
+  }
+  
+  .list-container:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+    /* Team section in a grid layout to avoid scrolling */
+  .team-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .team-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .team-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  
+  .team-container::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 10px;
+  }
+    .team-member {
+    flex: 0 0 220px;
+    margin: 0;
+    transition: all 0.3s ease;
+  }
+    .member-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    transform: translateY(0);
+    padding-top: 20px;
+    text-align: center;
+  }
+  
+  .member-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  }  .member-image {
+    height: 120px;
+    width: 120px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 0 auto;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+  }
+  
+  .member-card:hover .member-image img {
+    transform: scale(1.1);
+  }
+  
+  /* Feature images styling */
+  .feature-image-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 15px;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-out;
+  }
+  
+  .feature-image-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .feature-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .member-info {
+    background: linear-gradient(135deg, navy, #000066);
+    padding: 20px;
+    color: white;
+    position: relative;
+  }
+  
+  .member-info:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: orangered;
+    transition: all 0.5s ease;
+  }
+  
+  .member-card:hover .member-info:before {
+    width: 100%;
+  }
+  
+  .member-info h3 {
+    margin: 0 0 5px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+  
+  .member-info p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.8;
+    font-style: italic;
+  }
+  
+  .member-social {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .member-social a {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 14px;
+  }
+  
+  .member-social a:hover {
+    background-color: orangered;
+    transform: translateY(-3px);
+  }
+  
+  /* Icon drop styling for features */
+  .icon-drop {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(0, 0, 128, 0.05), rgba(0, 0, 128, 0.1));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 128, 0.05);
+  }
+  
+  .icon-drop:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(0, 0, 128, 0.05), transparent);
+    z-index: -1;
+    transform: scale(1.2);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+  
+  .list-container:hover .icon-drop:before {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  
+  .list-container:hover .icon-drop {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, rgba(0, 0, 128, 0.15), rgba(0, 0, 128, 0.25));
+    box-shadow: 0 8px 20px rgba(0, 0, 128, 0.1);
+  }
+  
+  .icon-drop i {
+    font-size: 28px;
+    color: navy;
+    transition: all 0.4s ease;
+  }
+  
+  .list-container:hover .icon-drop i {
+    transform: scale(1.1);
+    color: orangered;
+  }
+  
+  .text-container {
+    padding: 0 10px;
+  }
+  
+  @media (max-width: 1200px) {
+    .list-container {
+      flex: 0 0 48%;
+      min-width: 220px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .list-container {
+      flex: 0 0 85%;
+      min-width: 280px;
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .list-container {
+      width: 100% !important;
+    }
+    
+    .container {
+      padding: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .welcome-text {
+      font-size: 2.5rem;
+    }
+    
+    .welcome-text span {
+      font-size: 1.5rem;
+    }
+    
+    .button-container {
+      flex-direction: column;
+    }
+    
+    .col-md-12 {
+      flex-direction: column !important;
+    }
+    
+    .col-md-12 img {
+      margin-bottom: 1.5rem !important;
+    }
+  }
+</style>
+
+<!-- Welcome Section -->
+<div class="aim col-md-12">
+    <div class="welcome-container" style="display: flex; align-items: center; justify-content: center;">
+        {% if not user.is_authenticated %}
+        <h1 class="welcome-text">
+            JET-<span style="font-size: 30px;">Emergere's Training Management Portal</span>
+        </h1>
+        {% else %}
+        <h1 class="welcome-text" >
+            Welcome {{ user.username }}
+        </h1>
+        {% endif %}
+    </div>
+    <p class="subtext" style="font-size: 20px;margin-left: 70px;">
+        Empower your learning journey
+    </p>
+    <div class="banner"></div>
+</div>
+
+<!-- About JET Section -->
+<div class="content-container col-md-12 border-gradient fade-in" style="width: 98%;" id="what-is-jet">
+  <h2 style="color: navy; font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 30px; position: relative; padding-bottom: 15px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+    About JET
+    <span style="position: absolute; width: 80px; height: 3px; background: orangered; bottom: 0; left: 50%; transform: translateX(-50%);"></span>
+  </h2>
+  
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <div class="about-content">
+        <p style="max-width: 800px; margin: 0 auto 20px; font-size: 18px; line-height: 1.7; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color: #333;">
+          JET is your all-in-one web application designed to simplify the assignment, tracking, and reporting of your learning goals.
+        </p>
+        
+        <p style="max-width: 800px; margin: 0 auto 30px; font-size: 18px; line-height: 1.7; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; color: #333;">
+          Engage with your learning through fun challenges and our unique gamification features that make the learning process enjoyable and motivating!
+        </p>
+        
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px; flex-wrap: wrap;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 80px; height: 80px; background: rgba(0, 0, 128, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+              <i class="fas fa-rocket" style="font-size: 30px; color: navy;"></i>
+            </div>
+            <span style="font-weight: 600; color: navy;">Fast</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 80px; height: 80px; background: rgba(0, 0, 128, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+              <i class="fas fa-lock" style="font-size: 30px; color: navy;"></i>
+            </div>
+            <span style="font-weight: 600; color: navy;">Secure</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 80px; height: 80px; background: rgba(0, 0, 128, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+              <i class="fas fa-user-friends" style="font-size: 30px; color: navy;"></i>
+            </div>
+            <span style="font-weight: 600; color: navy;">Collaborative</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 80px; height: 80px; background: rgba(0, 0, 128, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+              <i class="fas fa-chart-bar" style="font-size: 30px; color: navy;"></i>
+            </div>
+            <span style="font-weight: 600; color: navy;">Analytics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
+
+<!-- Key Features Section -->
+<div class="content-container col-md-12 border-gradient" style="width: 98%;" id="key-features">
+  <h2 style="color: navy; font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 30px; position: relative; padding-bottom: 15px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+    Key Features
+    <span style="position: absolute; width: 80px; height: 3px; background: orangered; bottom: 0; left: 50%; transform: translateX(-50%);"></span>
+  </h2>
+
+  <section class="slide-in" style="font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">    <div class="list-container slide-in-left">
+      <div class="icon-drop">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="text-container">
+        <strong style="color: navy; font-size: 18px; display: block; margin-bottom: 10px;">Seamless Tracking</strong>
+        <p style="font-size:17px; line-height: 1.6; color: #333;">Monitor your progress in real-time and ensure you're on the path to success.</p>
+      </div>
+    </div>
+
+    <div class="list-container slide-in-right">
+      <div class="icon-drop">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <div class="text-container">
+        <strong style="color: navy; font-size: 18px; display: block; margin-bottom: 10px;">Email Automation</strong>
+        <p style="font-size:17px; line-height: 1.6; color: #333;">Stay informed with timely updates and reminders delivered directly to your inbox.</p>
+      </div>
+    </div>
+
+    <div class="list-container slide-in-left">
+      <div class="icon-drop">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="text-container">
+        <strong style="color: navy; font-size: 18px; display: block; margin-bottom: 10px;">Automated Reporting</strong>
+        <p style="font-size:17px; line-height: 1.6; color: #333;">Receive insightful reports that highlight your achievements and areas for growth.</p>
+      </div>
+    </div>
+
+    <div class="list-container slide-in-right">
+      <div class="icon-drop">
+        <i class="fas fa-gamepad"></i>
+      </div>
+      <div class="text-container">
+        <strong style="color: navy; font-size: 18px; display: block; margin-bottom: 10px;">Gamification</strong>
+        <p style="font-size:17px; line-height: 1.6; color: #333;">Engage with your learning through fun challenges and rewards that keep you motivated.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- User Management Section -->
+<div class="content-container col-md-12 border-gradient slide-in-left" style="width: 98%; margin-top: 20px; display: flex; align-items: center;">
+  <div class="col-md-12 d-flex align-items-center justify-content-center">
+      <a href="{% url 'login' %}">
+          <div class="feature-image-container">
+              <img src="{% static 'home/user-managemnet.jpg' %}" alt=" " class="img-animate feature-image">
+          </div>
+      </a>
+      <p style="margin-left: 20px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">
+          <strong style="color: navy; font-size: 20px;">User Management</strong><br> 
+          Effortlessly add, remove, and manage users with just a few clicks. Our intuitive interface ensures smooth navigation and easy control over user access and permissions.
+      </p>
+  </div>
+</div>
+
+<!-- User Dashboard Section -->
+<div class="content-container col-md-12 border-gradient slide-in-right" style="width: 98%; margin-top: 20px; display: flex; align-items: center;">
+  <div class="col-md-12 d-flex align-items-center justify-content-center">
+      <p style="margin-right: 20px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">
+          <strong style="color: navy; font-size: 20px;">User Dashboard</strong><br> 
+          Get a bird's-eye view of all your learning activities and performance metrics. The User Dashboard is your personalized command center, presenting insights and progress in a sleek, digestible format.
+      </p>
+      <a href="{% url 'login' %}">
+          <div class="feature-image-container">
+              <img src="{% static 'home/user-dashboard.jpg' %}" alt="Image 2" class="img-animate feature-image">
+          </div>
+      </a>
+  </div>
+</div>
+
+<!-- Email System Section -->
+<div class="content-container col-md-12 border-gradient slide-in-left" style="width: 98%; margin-top: 20px; display: flex; align-items: center;">
+  <div class="col-md-12 d-flex align-items-center justify-content-center">
+      <a href="{% url 'login' %}">
+          <div class="feature-image-container">
+              <img src="{% static 'home/mail-system.jpg' %}" alt="Image 3" class="img-animate feature-image">
+          </div>
+      </a>
+      <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">
+          <strong style="color: navy; font-size: 20px;">Email System</strong><br> 
+          Never miss a beat with our robust email system. Receive automated updates, reminders, and notifications that keep you informed and on track with your learning goals. Stay connected and engaged seamlessly!
+      </p>
+  </div>
+</div>
+
+<!-- Gamification Section -->
+<div class="content-container col-md-12 border-gradient slide-in-right" style="width: 98%; margin-top: 20px; display: flex; align-items: center;">
+  <div class="col-md-12 d-flex align-items-center justify-content-center">
+      <p style="margin-right: 20px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">
+          <strong style="color: navy; font-size: 20px;">Gamification</strong><br> 
+          Level up your learning journey with our gamification features! Earn points and badges for completing challenges and achieving milestones, make yourself engaged and feel yourself motivated through our games which are designed on aspects of upskilling logical thinking and problem-solving skills.
+      </p>
+      <a href="{% url 'bingo' %}">
+          <div class="feature-image-container">
+              <img src="{% static 'home/gamehub.jpg' %}" alt="Image 4" class="img-animate feature-image">
+          </div>
+      </a>
+  </div>
+</div>
+
+<!-- Team Section -->
+<div class="content-container col-md-12 border-gradient" id="our-team">
+  <h2 class="section-heading">Our Team</h2>
+  <div class="team-container">
+    <div class="team-member">
+      <div class="member-card">
+        <div class="member-image">
+          <img src="{% static 'home/Akash.jpg' %}" alt="Akash PG">
+        </div>
+        <div class="member-info">
+          <h3>Akash PG</h3>
+          <p>Back-End Developer</p>
+          <div class="member-social">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="team-member">
+      <div class="member-card">
+        <div class="member-image">
+          <img src="{% static 'home/Bhargavi.jpg' %}" alt="Donthireddy Bhargavi">
+        </div>
+        <div class="member-info">
+          <h3>Donthireddy Bhargavi</h3>
+          <p>Team Lead & Front-End Developer</p>
+          <div class="member-social">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="team-member">
+      <div class="member-card">
+        <div class="member-image">
+          <img src="{% static 'home/Sheik.jpg' %}" alt="Sheik Mathar A">
+        </div>
+        <div class="member-info">
+          <h3>Sheik Mathar A</h3>
+          <p>UI/UX Architect</p>
+          <div class="member-social">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="team-member">
+      <div class="member-card">
+        <div class="member-image">
+          <img src="{% static 'home/Vaishnavy.jpg' %}" alt="Vaishnavy Vishwanathan">
+        </div>
+        <div class="member-info">
+          <h3>Vaishnavy Vishwanathan</h3>
+          <p>Project Manager</p>
+          <div class="member-social">
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Get Started Section (for non-authenticated users) -->
+{% if not user.is_authenticated %}
+<div class="content-container col-md-12 border-gradient" style="width: 98%; align-items: center;" id="get-started">
+  <div class="row">
+      <div class="col-md-12 text-center">
+          <h2 style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">Get Started</h2>
+          <div class="button-container">
+              <div class="button-group" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                  <a href="{% url 'login' %}">
+                      <button class="btn btn-secondary">Sign in</button>
+                  </a>
+                  <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">Hey buddy Welcome Back!</p>
+              </div>
+              <div class="button-group" style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                  <a href="{% url 'register' %}">
+                      <button class="btn btn-primary">Sign up</button>
+                  </a>
+                  <p style="font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 17px;">Kudos to your Successful Career Journey!</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- JavaScript for animations -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add animation delays to stagger the animations
+    const animatedElements = document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in');
+    animatedElements.forEach((element, index) => {
+      element.style.animationDelay = `${index * 0.2}s`;
+    });
+    
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

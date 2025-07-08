@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>    
+    <title>{% block title %}JET - Emergere's Training Portal{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <!-- Modern jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Font Awesome kit -->
+    <script src="https://kit.fontawesome.com/4254e24a8.js" crossorigin="anonymous"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">      <style>        /* Navbar styling with navy background and white text */
+        .navbar {
+            background-color: navy !important;
+        }
+        
+        /* Modern UI/UX Variables */
+        :root {
+            /* Primary Colors */
+            --primary: navy;
+            --primary-light: rgba(0, 0, 128, 0.1);
+            --primary-dark: #000066;
+            
+            /* Secondary Colors */
+            --secondary: orangered;
+            --secondary-light: #ff6347;
+            --secondary-dark: #cc3300;
+            
+            /* Text Colors */
+            --text-dark: #333333;
+            --text-muted: #6c757d;
+            --text-light: #ffffff;
+            
+            /* Background Colors */
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --bg-dark: #343a40;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+            
+            /* Transitions */
+            --transition-speed: 0.3s;
+            --transition-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            
+            /* Border Radius */
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+        }
+        
+        /* Base Styles */
+        html {
+            scroll-behavior: smooth;
+        }
+          body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+            line-height: 1.2;
+        }      /* Enhanced Professional Navbar */
+        .navbar {
+            box-shadow: var(--shadow-md);
+            padding: 0.75rem 1.5rem;
+            transition: all var(--transition-speed) var(--transition-ease);
+            background-color: navy !important;
+            position: relative;
+            z-index: 1000;
+        }
+          
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+          
+        .logo-image {
+            height: 45px;
+            margin-right: 1rem;
+            transition: transform var(--transition-speed) var(--transition-ease);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .logo-image:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Navbar enhancements */
+        .navbar-brand-container {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Quick links styling */
+        .quick-links-container {
+            display: flex;
+            margin-left: 15px;
+        }
+        
+        .quick-link-icon-nav {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1rem;
+            margin: 0 8px;
+            padding: 6px 8px;
+            border-radius: var(--border-radius-md);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .quick-link-icon-nav:hover {
+            color: white;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .quick-link-icon-nav::after {
+            content: attr(title);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            width: max-content;
+            max-width: 120px;
+            z-index: 100;
+        }
+        
+        .quick-link-icon-nav:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+        
+        /* Nav menu */
+        .navbar-nav {
+            margin-left: auto;
+        }
+        
+        .navbar-nav .nav-item {
+            margin: 0 0.25rem;
+            position: relative;
+        }
+          
+        .navbar-nav .nav-link {
+            color: white !important;
+            padding: 0.5rem 1rem;
+            position: relative;
+            font-weight: 600;
+            transition: all var(--transition-speed) var(--transition-ease);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-nav .nav-link .nav-icon {
+            margin-bottom: 3px;
+            font-size: 1.1rem;
+        }
+        
+        .navbar-nav .nav-link .nav-text {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+          
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: orangered;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width var(--transition-speed) var(--transition-ease);
+        }
+        
+        .navbar-nav .nav-link:hover::after {
+            width: 60%;
+        }
+        
+        .navbar-nav .active .nav-link {
+            font-weight: 600;
+        }
+        
+        .navbar-nav .active .nav-link::after {
+            width: 60%;
+        }
+        
+        /* Auth buttons styling */
+        .auth-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .auth-btn:hover {
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .signin-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .signin-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+        
+        .signup-btn {
+            background-color: orangered;
+            border: 1px solid orangered;
+            box-shadow: 0 2px 8px rgba(255, 69, 0, 0.4);
+        }
+        
+        .signup-btn:hover {
+            background-color: #ff5722;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 69, 0, 0.5);
+        }
+        
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+        }.navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+            padding: 0.25rem 0.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            outline: none !important;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-toggler:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* Responsive navbar improvements */
+        @media (max-width: 991.98px) {
+            .navbar {
+                padding: 0.5rem 1rem;
+                background-color: rgba(255, 255, 255, 0.95) !important;
+                box-shadow: var(--shadow-md);
+            }
+            
+            .navbar-collapse {
+                background-color: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-top: 0.5rem;
+                box-shadow: var(--shadow-lg);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+            }
+            
+            .navbar-nav .nav-item {
+                margin: 0.25rem 0;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.625rem 1rem;
+                border-radius: 8px;
+                transition: all var(--transition-speed) var(--transition-ease);
+            }
+            
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link:focus {
+                background-color: var(--primary-light);
+                transform: translateX(5px);
+            }
+            
+            .navbar-nav .nav-link::after {
+                bottom: auto;
+                left: 0;
+                height: 100%;
+                width: 3px;
+                transform: none;
+                top: 0;
+            }
+            
+            .navbar-nav .nav-link:hover::after {
+                width: 3px;
+                height: 100%;
+            }
+            
+            .navbar-nav .active .nav-link::after {
+                width: 3px;
+                height: 100%;
+            }
+            
+            .dropdown-menu {
+                border: none;
+                box-shadow: none;
+                background-color: rgba(0, 0, 0, 0.02);
+                margin-left: 1rem;
+                padding: 0.5rem;
+            }
+            
+            .dropdown-item {
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+            }
+        }
+        
+        /* Better styling for extra small devices */
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            
+            .logo-image {
+                height: 35px;
+            }
+            
+            .navbar-nav .nav-link {
+                font-size: 0.95rem;
+            }
+        }
+          /* Enhanced Buttons */
+        .btn {
+            border-radius: var(--border-radius-md);
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            transition: all var(--transition-speed) var(--transition-ease);
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        
+        .btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+            border-color: var(--secondary-dark);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Modern Card Styles */
+        .card {
+            border-radius: var(--border-radius-md);
+            border: none;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-speed) var(--transition-ease);
+            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-md) var(--spacing-md);
+        }
+        
+        .card-title {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .card-body {
+            padding: var(--spacing-md);
+        }
+        
+        .card-footer {
+            background-color: var(--bg-white);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-md) var(--spacing-md);
+        }
+          /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s var(--transition-ease) forwards;
+        }
+        
+        .slide-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s var(--transition-ease) forwards;
+        }
+        
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slideInLeft 0.8s var(--transition-ease) forwards;
+        }
+        
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            animation: slideInRight 0.8s var(--transition-ease) forwards;
+        }
+        
+        .zoom-in {
+            opacity: 0;
+            transform: scale(0.9);
+            animation: zoomIn 0.8s var(--transition-ease) forwards;
+        }
+        
+        .bounce-in {
+            opacity: 0;
+            animation: bounceIn 1s var(--transition-ease) forwards;
+        }
+        
+        /* Animation delays */
+        [data-delay="0.1s"] { animation-delay: 0.1s; }
+        [data-delay="0.2s"] { animation-delay: 0.2s; }
+        [data-delay="0.3s"] { animation-delay: 0.3s; }
+        [data-delay="0.4s"] { animation-delay: 0.4s; }
+        [data-delay="0.5s"] { animation-delay: 0.5s; }
+        [data-delay="0.6s"] { animation-delay: 0.6s; }
+        [data-delay="0.7s"] { animation-delay: 0.7s; }
+        [data-delay="0.8s"] { animation-delay: 0.8s; }
+        [data-delay="0.9s"] { animation-delay: 0.9s; }
+        [data-delay="1s"] { animation-delay: 1s; }
+        
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from { 
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from { 
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Utility classes */
+        .bg-primary-light {
+            background-color: var(--primary-light);
+        }
+        
+        .bg-gradient-primary {
+            background-image: linear-gradient(to right, var(--primary), var(--primary-dark));
+        }
+        
+        .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        .text-secondary {
+            color: var(--secondary) !important;
+        }
+        
+        .border-primary {
+            border-color: var(--primary) !important;
+        }
+        
+        .border-left-primary {
+            border-left: 4px solid var(--primary) !important;
+        }
+        
+        .rounded {
+            border-radius: var(--border-radius-md) !important;
+        }
+        
+        .shadow-hover:hover {
+            box-shadow: var(--shadow-lg) !important;
+            transform: translateY(-5px);
+        }
+        
+        .transition {
+            transition: all var(--transition-speed) var(--transition-ease);
+        }
+          /* Feature cards */
+        .feature-card {
+            text-align: center;
+            padding: var(--spacing-md);
+            height: 100%;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            background-color: var(--bg-white);
+            transition: all var(--transition-speed) var(--transition-ease);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            z-index: 2;
+            transition: height var(--transition-speed) var(--transition-ease);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-card:hover::before {
+            height: 6px;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            margin: 0 auto var(--spacing-md);
+            transition: all var(--transition-speed) var(--transition-ease);
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            background-color: var(--primary);
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 128, 0.3);
+        }
+        
+        .feature-card:hover .feature-icon i {
+            color: white !important;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+        
+        .feature-description {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+        
+        /* Section styles */
+        .section {
+            padding: var(--spacing-xl) 0;
+            position: relative;
+        }
+        
+        .section-bg-light {
+            background-color: var(--bg-light);
+        }
+        
+        .divider {
+            height: 4px;
+            width: 60px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .divider-center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .section-subtitle {
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+            font-size: 1.125rem;
+        }
+        
+        /* Table styles */
+        .table {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .table thead th {
+            background-color: var(--primary);
+            color: var(--text-light);
+            border: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .table td {
+            vertical-align: middle;
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .table tbody tr {
+            transition: all var(--transition-speed) var(--transition-ease);
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        /* Form elements */
+        .form-control {
+            border-radius: var(--border-radius-md);
+            padding: 0.625rem 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-speed) var(--transition-ease);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 0, 128, 0.15);
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        
+        /* Sidebar improvements */
+        .sidebar {
+            transition: all var(--transition-speed) var(--transition-ease);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--border-radius-md);
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all var(--transition-speed) var(--transition-ease);
+        }
+        
+        .sidebar-link:hover, 
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border-left-color: var(--secondary);
+        }
+        
+        .sidebar-link i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main content container */
+        .main-content {
+            flex: 1 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 2rem;
+        }
+        
+        /* Ensure proper container width and spacing */
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        
+        /* Fixed navbar styling */
+        #main-navbar {
+            position: relative;
+            z-index: 1030;
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            background: transparent !important;
+        }
+        
+        /* Helper class to remove the background from navbar */
+        .navbar-transparent {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        /* Final fixes for consistent styling */
+        .wrapper {
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 0;
+        }        /* Force navy background navbar globally with white text */
+        .navbar, 
+        .navbar.navbar-expand-lg, 
+        #main-navbar {
+            background-color: navy !important;
+            background: navy !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Ensure all navbar text is white and visible */
+        .navbar * {
+            color: white !important;
+        }
+        
+        .navbar .navbar-brand,
+        .navbar .nav-link,
+        .navbar .navbar-toggler,
+        .navbar .navbar-toggler-icon,
+        .navbar .dropdown-toggle {
+            color: white !important;
+        }
+        
+        .navbar i.fas,
+        .navbar i.fa,
+        .navbar i.far {
+            color: white !important;
+        }
+          /* Make sure links are visible against navy background */
+        .navbar .nav-link {
+            color: white !important;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Enhanced hover effect */
+        .navbar .nav-link:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: orangered;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar .nav-link:hover:before {
+            transform: translateX(0);
+        }
+        
+        /* Ensure navbar is positioned above other elements */
+        #main-navbar {
+            position: relative;
+            z-index: 1100;
+        }
+        
+        /* Make sure main content doesn't have unintended margins */
+        .main-content {
+            margin-top: 0;
+        }
+        
+        /* Global reset for containers inside home page */
+        .home-page-container .container,
+        [id="what-is-jet"],
+        [id="key-features"],
+        [id="our-team"],
+        [id="get-started"] {
+            background-color: #ffffff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 991.98px) {
+            /* Mobile navbar adjustments */
+            .navbar-collapse {
+                background-color: rgba(255, 255, 255, 0.98);
+                border-radius: var(--border-radius-md);
+                box-shadow: var(--shadow-md);
+                margin-top: 0.5rem;
+                padding: 1rem;
+            }
+        }
+        
+        /* Enhanced Footer styling with navy background */        /* Modern professional footer with enhanced visibility */
+        .footer {
+            background-color: navy !important;
+            color: white !important;
+            padding: 30px 0;
+            width: 100%;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1000;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+          .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer-logo span {
+            background: linear-gradient(45deg, white, #f0f8ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+        
+        .footer-logo span::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+        }
+        
+        .footer-info {
+            text-align: center;
+        }
+          .footer-info p {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.05rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 15px;
+        }
+          .footer-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.1rem;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: none;
+        }
+        
+        .footer-links a:hover {
+            background-color: orangered;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+            border-color: transparent;
+        }
+        
+        .footer-links a i {
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+          .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, navy, orangered, navy);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+          .footer a {
+            color: #ffffff;
+            position: relative;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.4);
+            padding-bottom: 2px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer a:hover {
+            color: #f0f8ff;
+            text-decoration: none;
+            border-bottom-color: orangered;
+        }
+        
+        /* Big Responsive Footer Styling */
+        .footer-large {
+          width: 100%;
+          background-color: #062046;
+          color: #ffffff;
+          font-size: 16px;
+          position: relative;
+          padding: 0;
+          margin-top: 60px;
+          box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-large::before {
+          content: '';
+          position: absolute;
+          top: -5px;
+          left: 0;
+          right: 0;
+          height: 5px;
+          background: linear-gradient(to right, navy, orangered, navy);
+        }
+        
+        .footer-top {
+          background: linear-gradient(145deg, #062046, #0a3677);
+          padding: 60px 0 40px;
+        }
+        
+        .footer-bottom {
+          background-color: #041835;
+          padding: 20px 0;
+          font-size: 14px;
+        }
+        
+        .footer-brand h2 {
+          color: #fff;
+          font-size: 32px;
+          font-weight: 700;
+          margin: 0;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .footer-brand .tagline {
+          color: #f8f9fa;
+          font-size: 16px;
+          opacity: 0.9;
+          display: block;
+          margin-top: 5px;
+        }
+        
+        .footer-info p {
+          font-size: 15px;
+          line-height: 1.7;
+          color: #d6d6d6;
+        }
+          /* Newsletter styles removed */
+        
+        .footer-links h4, .footer-contact h4, .footer-social h4 {
+          font-size: 18px;
+          font-weight: 600;
+          color: #fff;
+          position: relative;
+          margin-bottom: 25px;
+          padding-bottom: 10px;
+        }
+        
+        .footer-links h4::after, .footer-contact h4::after, .footer-social h4::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 2px;
+          width: 50px;
+          background: orangered;
+        }
+        
+        .footer-links ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        
+        .footer-links ul li {
+          padding: 8px 0;
+          display: flex;
+          align-items: center;
+        }
+        
+        .footer-links ul li i {
+          color: orangered;
+          font-size: 12px;
+          margin-right: 10px;
+        }
+        
+        .footer-links ul li a {
+          color: #d6d6d6;
+          transition: all 0.3s ease;
+          font-size: 15px;
+          text-decoration: none;
+        }
+        
+        .footer-links ul li a:hover {
+          color: #fff;
+          padding-left: 5px;
+        }
+        
+        .footer-contact p {
+          line-height: 1.8;
+          color: #d6d6d6;
+          font-size: 15px;
+        }
+        
+        .footer-contact p strong {
+          color: #fff;
+        }
+        
+        .footer-social .social-links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        
+        .footer-social .social-links a {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          font-size: 18px;
+          transition: all 0.3s ease;
+        }
+        
+        .footer-social .social-links a:hover {
+          background-color: orangered;
+          transform: translateY(-5px);
+        }
+          /* App download styles removed */
+        
+        .footer-bottom .copyright {
+          color: #bbb;
+        }
+        
+        .footer-bottom .copyright strong {
+          color: #fff;
+        }
+        
+        .footer-bottom .credits {
+          color: #bbb;
+        }
+        
+        .footer-bottom .credits a {
+          color: #fff;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+        
+        .footer-bottom .credits a:hover {
+          color: orangered;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 991px) {
+          .footer-info, .footer-links, .footer-contact, .footer-social {
+            margin-bottom: 40px;
+          }
+        }
+        
+        @media (max-width: 767px) {
+          .footer-bottom {
+            text-align: center;
+          }
+          
+          .footer-bottom .text-md-right {
+            text-align: center !important;
+            margin-top: 10px;
+          }
+          
+          .footer-links h4::after, .footer-contact h4::after, .footer-social h4::after {
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          
+          .footer-links ul li {
+            justify-content: center;
+          }
+          
+          .footer-social .social-links {
+            justify-content: center;
+          }
+          
+          .footer-social .app-buttons {
+            justify-content: center;
+          }
+          
+          .footer-contact p {
+            text-align: center;
+          }
+          
+          .footer-newsletter {
+            max-width: 400px;
+            margin: 0 auto;
+          }
+        }
+        
+        /* Quick Links Icon Styling */
+        .footer-quick-links h4 {
+          color: #fff;
+          font-size: 18px;
+          font-weight: 600;
+          position: relative;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+        }
+        
+        .footer-quick-links h4::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 2px;
+          width: 50px;
+          background: orangered;
+        }
+        
+        .quick-link-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 45px;
+          height: 45px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          margin: 5px 10px 5px 0;
+          transition: all 0.3s ease;
+          font-size: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .quick-link-icon:hover {
+          background-color: orangered;
+          color: white;
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          text-decoration: none;
+        }
+
+        .text-orangered {
+          color: orangered !important;
+        }
+
+        .text-white {
+          color: #ffffff !important;
+        }
+    </style>
+    <script>
+      let score = 0;
+      let startTime;
+      let timer;
+
+      function startTimer() {
+          startTime = new Date().getTime();
+          timer = setInterval(() => {
+              let currentTime = new Date().getTime();
+              let timeSpent = (currentTime - startTime) / 1000; // Time in seconds
+
+              // Update score based on time spent
+              if (timeSpent > 300 && timeSpent <= 600) {
+                  score = 1; // Minimum score
+              } else if (timeSpent > 600) {
+                  score = 5; // Maximum score
+              }
+          }, 1000); // Update every second
+      }
+
+      function stopTimer() {
+          clearInterval(timer);
+          // Here you would typically send the score to your backend to track it
+          console.log("User score:", score);
+          // Update leaderboard logic here
+      }
+
+      window.onload = startTimer;
+      window.onbeforeunload = stopTimer;
+  </script>
+</head>
+<body>    <div class="wrapper">      <!-- Enhanced professional navbar with multi-line hover effect and context-aware links -->
+      <nav class="navbar navbar-expand-lg" id="main-navbar">
+        <div class="container">            
+            <!-- Left corner: Brand section with Emergere logo and JET -->
+            <div class="navbar-brand-container">
+                <a class="navbar-brand mr-2" href="https://emergertech.com/" title="Emergere Technologies">
+                    <img src="{% static 'home/emergere_technologies_logo.jpg' %}" class="logo-image" alt="Emergere Technologies Logo">
+                </a>
+                <a class="navbar-brand mr-3" href="{% url 'home' %}">JET</a>
+                
+                <!-- Quick links - visible for guests only -->
+                {% if not request.user.is_authenticated %}
+                <div class="d-none d-lg-flex quick-links-container">
+                    <a class="quick-link-icon-nav" href="{% url 'home' %}#what-is-jet" title="About JET">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <a class="quick-link-icon-nav" href="{% url 'home' %}#key-features" title="Key Features">
+                        <i class="fas fa-list-alt"></i>
+                    </a>
+                    <a class="quick-link-icon-nav" href="{% url 'help' %}" title="Help & Support">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                    <a class="quick-link-icon-nav" href="{% url 'home' %}#our-team" title="Our Team">
+                        <i class="fas fa-users"></i>
+                    </a>
+                    <a class="quick-link-icon-nav" href="{% url 'home' %}#get-started" title="Get Started">
+                        <i class="fas fa-rocket"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Responsive navbar toggler -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars" style="color: white;"></i>
+            </button>
+
+            <!-- Navbar content that collapses on mobile -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% if not request.user.is_authenticated %}
+                    <!-- Guest navigation - Section links on mobile -->
+                    <ul class="navbar-nav mr-auto d-lg-none">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#what-is-jet">
+                                <div class="nav-icon"><i class="fas fa-info-circle"></i></div>
+                                <div class="nav-text">About JET</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#key-features">
+                                <div class="nav-icon"><i class="fas fa-list-alt"></i></div>
+                                <div class="nav-text">Key Features</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'help' %}">
+                                <div class="nav-icon"><i class="fas fa-question-circle"></i></div>
+                                <div class="nav-text">Help & Support</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#our-team">
+                                <div class="nav-icon"><i class="fas fa-users"></i></div>
+                                <div class="nav-text">Our Team</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#get-started">
+                                <div class="nav-icon"><i class="fas fa-rocket"></i></div>
+                                <div class="nav-text">Get Started</div>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right corner: Sign in and Sign up buttons -->
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item mr-3">
+                            <a class="auth-btn signin-btn" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt mr-2"></i><span>Sign in</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="auth-btn signup-btn" href="{% url 'register' %}" id="signupBtn">
+                                <i class="fas fa-user-plus mr-2"></i><span>Sign up</span>
+                            </a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <!-- Authenticated user navigation - Main app links -->
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">
+                                <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                <div class="nav-text">Dashboard</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'inbox' %}">
+                                <div class="nav-icon"><i class="fas fa-envelope"></i></div>
+                                <div class="nav-text">Inbox</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'metrics' %}">
+                                <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+                                <div class="nav-text">Metrics</div>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <div class="nav-icon">
+                                    {% if request.user.profile_picture %}
+                                        <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                                    {% elif request.user.profile.profile_picture %}
+                                        <img src="{{ request.user.profile.profile_picture.url }}" alt="Profile" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                                    {% else %}
+                                        <i class="fas fa-user-cog"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="nav-text">Account</div>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{% url 'user_detail' request.user.id %}">
+                                    <i class="fas fa-user-circle mr-2"></i>My Profile
+                                </a>
+                                <a class="dropdown-item" href="{% url 'user_update' request.user.id %}">
+                                    <i class="fas fa-user-edit mr-2"></i>Edit Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'help' %}">
+                                    <i class="fas fa-question-circle mr-2"></i>Help
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <!-- Right side: Logout button for authenticated users -->
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="auth-btn logout-btn" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt mr-2"></i><span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages system for feedback -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} mr-2"></i>
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+      <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Script to add a class to the home page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if current page is home page
+            if (window.location.pathname === '/' || window.location.pathname === '/home/') {
+                document.querySelector('.main-content').classList.add('home-page-container');
+                
+                // Ensure navbar is fully transparent on home page
+                const navbar = document.querySelector('#main-navbar');
+                if (navbar) {
+                    navbar.classList.add('navbar-transparent');
+                    navbar.style.backgroundColor = 'transparent !important';
+                    navbar.style.background = 'transparent !important';
+                    navbar.style.boxShadow = 'none';
+                }
+            }
+        });
+    </script>
+  
+                    
+{% if request.user.is_authenticated %}
+<!-- Footer will be at the bottom of the page -->
+{% endif %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden; 
+  font-family: Arial, sans-serif;
+  background-color: white;
+  background-image: none;
+}
+
+h1, h4 {
+  color: navy!important;
+}
+
+h1 {
+  font-size: large;
+}
+
+h4 {
+  font-size: small;
+}
+
+.hidden-link {
+  color: transparent;
+  text-decoration: none;
+}
+
+.hidden-link:hover {
+  background-color: orangered;
+  color: #ffffff;
+}
+
+.wrapper {
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content, .main-content-container {
+  flex: 1; 
+}
+
+.navbar {
+  background-color: navy!important;
+  padding: 1rem;
+  width: 100%; 
+  height: 72px; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand, .navbar-brand-container {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  margin-right: 0px;
+  color: #FFFFFF!important;
+  font-size: 1.5rem;
+  font-weight:bold;
+
+}
+
+.navbar-brand:hover{
+  color: orangered!important;
+}
+
+.navbar a{
+  position: relative;
+  font-size: 1.1em;
+  color:#fff;
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 40px;
+}
+
+.navbar a::after{
+  content:'';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  background:#fff;
+  border-radius: 5px;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform.5s;
+}
+
+.navbar a:hover::after{
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+.navbar-toggler.btnLogin-popup {
+  width: 130px;
+  height: 50px;
+  color: #fff;
+  background: transparent;
+  border: 2px solid #fff;
+  outline: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 500;
+  margin-left: 40px;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.navbar-toggler.btnLogin-popup:hover {
+  background-color: #fff;
+  color: #162938;
+}
+
+.navbar-toggler.btnLogin-popup:focus {
+  box-shadow: none; /* remove default focus outline */
+}
+
+.navbar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-item {
+  margin-right: 20px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.nav-link {
+  align-items: right;
+  color: white!important;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: orangered!important;
+}
+
+.navbar-nav.ml-auto .nav-link {
+  font-size: 17px; 
+  padding: 4px 8px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+
+.navbar-nav.ml-auto .nav-link:hover {
+  background-color: #f7f7f7;
+  color: #333;
+  transform: scale(1.2);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Footer styling removed as it's defined earlier in the file */
+
+.logo-image {
+  height: 45px;
+  width: 45px;
+  margin-right: 12px;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.08);
+}
+</style>
+        <footer class="footer-large">            
+            <div class="footer-top">
+                <div class="container">
+                    <div class="row">                        <div class="col-lg-8 col-md-6 footer-info mb-4">
+                            <div class="footer-brand">
+                                <h2>JET</h2>
+                                <span class="tagline">Emergere's Training Portal</span>
+                            </div>
+                            <p class="mt-3 text-white">Empower your learning journey with our comprehensive training management system. JET provides a seamless platform for skill development and progress tracking.</p>
+                              <div class="footer-quick-links mt-4">
+                                <h4 class="text-white">Quick Links</h4>
+                                <div class="d-flex flex-wrap mt-3">
+                                    <a href="{% url 'home' %}#what-is-jet" class="quick-link-icon" title="About JET">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+                                    <a href="{% url 'home' %}#key-features" class="quick-link-icon" title="Key Features">
+                                        <i class="fas fa-list-alt"></i>
+                                    </a>
+                                    <a href="{% url 'help' %}" class="quick-link-icon" title="Help & Support">
+                                        <i class="fas fa-question-circle"></i>
+                                    </a>
+                                    <a href="{% url 'home' %}#our-team" class="quick-link-icon" title="Our Team">
+                                        <i class="fas fa-users"></i>
+                                    </a>
+                                    <a href="{% url 'home' %}#get-started" class="quick-link-icon" title="Get Started">
+                                        <i class="fas fa-rocket"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                          <div class="col-lg-4 col-md-6 footer-contact mb-4">
+                            <h4 class="text-white">Contact Us</h4>
+                            <p class="text-white">
+                                <strong class="text-white"><i class="fas fa-map-marker-alt mr-2 text-orangered"></i> Address:</strong><br>
+                                <span class="text-white">Emergere Technologies</span><br>
+                                <span class="text-white">Bengaluru, Karnataka</span><br>
+                                <span class="text-white">India</span><br>
+                                <strong class="text-white"><i class="fas fa-envelope mr-2 text-orangered"></i> Email:</strong><br>
+                                <span class="text-white">info@emergeretechnologies.com</span><br>
+                                <strong class="text-white"><i class="fas fa-phone-alt mr-2 text-orangered"></i> Phone:</strong><br>
+                                <span class="text-white">+91 12345 67890</span><br>
+                            </p>
+                        </div>
+                    </div>
+                      <div class="row mt-3">
+                        <div class="col-12 text-center footer-social">
+                            <h4 class="text-white">Connect With Us</h4>
+                            <div class="social-links mt-3 d-flex justify-content-center">
+                                <a href="#" class="linkedin mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+                                <a href="#" class="twitter mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+                                <a href="#" class="facebook mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+                                <a href="#" class="instagram mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+                                <a href="#" class="youtube mx-2"><i class="fab fa-youtube fa-lg"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              <div class="footer-bottom">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="copyright text-white">
+                                &copy; {% now "Y" %} <strong class="text-white">JET</strong> - All Rights Reserved
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-right">
+                            <div class="credits text-white">
+                                Designed with <i class="fas fa-heart text-orangered"></i> by <a href="#" class="text-white">Emergere Team</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<!-- Responsive enhancement script -->
+<script>
+    // Check if navbar is in mobile view and adjust accordingly
+    function checkNavbarMode() {
+        const width = window.innerWidth;
+        const navbar = document.querySelector('.navbar');
+        
+        if (navbar) {
+            // Force transparent background for navbar
+            navbar.style.backgroundColor = 'transparent';
+            navbar.style.background = 'transparent';
+            
+            // Add appropriate classes based on viewport width
+            if (width < 992) {
+                navbar.classList.add('mobile-view');
+                // Only show white background for collapsed menu on small screens
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+                }
+            } else {
+                navbar.classList.remove('mobile-view');
+                navbar.style.backgroundColor = 'transparent';
+            }
+        }
+    }
+    
+    // Run immediately
+    document.addEventListener('DOMContentLoaded', function() {
+        checkNavbarMode();
+        // Force the navbar to be transparent
+        const navbar = document.getElementById('main-navbar');
+        if (navbar) {
+            navbar.style.backgroundColor = 'transparent';
+            navbar.style.background = 'transparent';
+        }
+    });
+    
+    // Run on window resize
+    window.addEventListener('resize', checkNavbarMode);
+    
+    // Run when navbar is toggled
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggler = document.querySelector('.navbar-toggler');
+        if (toggler) {
+            toggler.addEventListener('click', function() {
+                setTimeout(checkNavbarMode, 10);
+            });
+        }
+    });
+</script>
+
+<!-- Custom JavaScript -->
+<script>
+    // Password visibility toggle
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+    
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+        
+        // Enable Bootstrap tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Enable Bootstrap popovers
+        $('[data-toggle="popover"]').popover();
+        
+        // Animate elements when they come into view
+        const animateElements = document.querySelectorAll('.slide-in, .slide-in-left, .slide-in-right');
+        
+        if (animateElements.length > 0 && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationDelay = entry.target.dataset.delay || '0s';
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animateElements.forEach(element => {
+                element.style.animationPlayState = 'paused';
+                observer.observe(element);
+            });
+        }
+        
+        // Handle sidebar toggle on mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.style.display = sidebar.style.display === "none" ? "block" : "none";
+            });
+        }
+    });
+</script>
+
+<!-- Enhanced Navbar Styling -->
+<style>
+    /* Professional navbar styling */
+    .navbar {
+        background-color: navy!important;
+        padding: 0.8rem 1rem;
+        width: 100%; 
+        min-height: 74px; 
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Enhanced brand styling */
+    .navbar-brand {
+        margin-right: 1.5rem;
+        color: #FFFFFF!important;
+        font-size: 1.5rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Professional spacing between nav items */
+    .navbar-nav .nav-item {
+        margin: 0 0.5rem;
+    }
+    
+    /* Two-line hover effect for nav links */
+    .navbar-nav .nav-link {
+        position: relative;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 0 0.3rem;
+    }
+    
+    .navbar-nav .nav-link::before,
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background: orangered;
+        transition: width 0.3s ease;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .navbar-nav .nav-link::before {
+        top: 0;
+    }
+    
+    .navbar-nav .nav-link::after {
+        bottom: 0;
+    }
+    
+    .navbar-nav .nav-link:hover::before,
+    .navbar-nav .nav-link:hover::after {
+        width: 80%;
+    }
+    
+    /* Button styling in navbar */
+    .navbar-nav .btn {
+        padding: 0.5rem 1.2rem;
+        margin: 0 0.4rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-nav .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+      /* Dropdown styling */
+    .dropdown-menu {
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: none;
+        padding: 0.5rem;
+    }
+    
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(0, 0, 128, 0.05);
+        transform: translateX(5px);
+    }    /* Quick links container styling - close to JET logo */
+    .quick-links-container {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+    
+    /* Quick link icon styling in navbar */
+    .quick-link-icon-nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin: 0 5px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .quick-link-icon-nav:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    
+    .quick-link-icon-nav::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background-color: orangered;
+        transition: width 0.3s ease;
+    }
+      .quick-link-icon-nav:hover::after {
+        width: 60%;
+    }
+    
+    /* Dashboard link styling (on right) */
+    .dashboard-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .dashboard-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .dashboard-link::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 15%;
+        right: 15%;
+        height: 2px;
+        background-color: orangered;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .dashboard-link:hover::after {
+        transform: scaleX(1);
+    }
+    
+    /* Logout link styling (on left) */
+    .logout-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        background-color: rgba(255, 69, 0, 0.1);
+        color: white;
+        padding: 8px 16px;
+        margin-left: 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 69, 0, 0.3);
+    }
+    
+    .logout-link:hover {
+        background-color: rgba(255, 69, 0, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .logout-link::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 15%;
+        right: 15%;
+        height: 2px;
+        background-color: orangered;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .logout-link:hover::after {
+        transform: scaleX(1);
+    }
+      /* Auth button styling for Sign in, Sign up, and Logout */
+    .auth-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: white;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    #signupBtn {
+        background-color: white !important;
+        color: navy !important;
+        border-color: white !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    #signupBtn i {
+        color: navy !important;
+    }
+      /* Sign in button styling */
+    .signin-btn {
+        background-color: transparent;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .signin-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* Sign up button styling */
+    .signup-btn {
+        background-color: white;
+        color: navy;
+        border: 2px solid white;
+    }
+    
+    .signup-btn i {
+        color: navy;
+    }
+    
+    .signup-btn:hover {
+        background-color: #f8f9fa;
+        color: navy;
+        border-color: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+    }
+    
+    /* Logout button styling */
+    .logout-btn {
+        background-color: rgba(255, 69, 0, 0.15);
+        border: 2px solid rgba(255, 69, 0, 0.3);
+    }
+    
+    .logout-btn:hover {
+        background-color: rgba(255, 69, 0, 0.25);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+    }
+    
+    /* Icon-based navigation styling for mobile */
+    .icon-link {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 8px;
+        padding: 0;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .icon-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .icon-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 3px;
+        background-color: orangered;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+    
+    .icon-link:hover::after {
+        width: 40%;
+    }
+    
+    /* Icon-based dropdown styling */
+    .icon-dropdown-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.75rem;
+        font-size: 1.2rem;
+    }
+    
+    /* Navbar styling improvements */
+    .navbar {
+        padding: 1rem 2rem;
+        background-color: navy !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-brand {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    .navbar-nav .nav-link {
+        position: relative;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Tooltip styling */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+      /* Mobile responsive adjustments */
+    @media (max-width: 991.98px) {
+        /* Mobile navbar adjustments */
+        .navbar-collapse {
+            background-color: rgba(0, 0, 128, 0.95);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            width: 94%;
+            top: 100%;
+            left: 3%;
+            right: 3%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1050;
+        }
+        
+        /* Center icons on mobile */
+        .navbar-nav {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .navbar-nav .nav-item {
+            margin: 0.5rem;
+            padding: 0;
+            border: none;
+        }
+        
+        /* Keep icon shape and styling on mobile */
+        .icon-link {
+            margin: 0.4rem;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .icon-link:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+        
+        .icon-link:hover::after {
+            width: 30%;
+        }
+        
+        /* Adjust auth buttons for mobile - keep them circular */
+        .navbar-nav .auth-btn {
+            margin: 0.5rem;
+        }
+        
+        /* Add tooltips on mobile */
+        .icon-link:after {
+            content: attr(title);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .icon-link:hover:after {
+            opacity: 1;
+        }
+    }    /* Medium screens adjustments */
+    @media (max-width: 767px) {
+        .quick-links-container {
+            display: none;
+        }
+        
+        .auth-btn {
+            padding: 7px 12px;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Special responsive adjustments for very small screens */
+    @media (max-width: 480px) {
+        .navbar {
+            padding: 0.8rem 1rem;
+        }
+        
+        .icon-link {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .navbar-brand {
+            font-size: 1.3rem;
+        }
+        
+        .logo-image {
+            height: 35px;
+            width: 35px;
+        }
+        
+        .auth-btn {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+        
+        .auth-btn i {
+            margin-right: 3px !important;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Extra small screens - make links even more compact */
+    @media (max-width: 360px) {
+        .auth-btn span {
+            display: none;
+        }
+        
+        .auth-btn {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .auth-btn i {
+            margin-right: 0 !important;
+        }
+    }
+</style>
+
+<!-- Script for navbar enhancements -->
+    <script>        document.addEventListener('DOMContentLoaded', function() {
+            // Force white color on all navbar elements except highlighted sign-up button
+            const navbarElements = document.querySelectorAll('.navbar *, .navbar .nav-link, .navbar-brand, .navbar i, .navbar .dropdown-toggle');
+            
+            navbarElements.forEach(function(element) {
+                // Skip the sign-up button and its child elements
+                if (!element.closest('.highlight')) {
+                    element.style.color = 'white';
+                }
+            });
+            
+            // Make sure sign-up button has navy color
+            const signUpButtons = document.querySelectorAll('.quick-link-icon-auth.highlight, .quick-link-icon-auth.highlight i');
+            signUpButtons.forEach(function(btn) {
+                btn.style.color = 'navy';
+            });
+            
+            // Enable Bootstrap tooltips for icon navigation
+            $('[data-toggle="tooltip"]').tooltip();            // Apply tooltips to all icons and buttons
+            const iconLinks = document.querySelectorAll('.icon-link, .icon-btn, .quick-link-icon-nav, .auth-btn');
+            iconLinks.forEach(link => {
+                if (link.title) {
+                    $(link).tooltip({
+                        placement: 'bottom',
+                        trigger: 'hover'
+                    });
+                }
+            });
+              // Fix sign-up button specifically
+            function fixSignUpButton() {
+                const signupBtn = document.getElementById('signupBtn');
+                const signupIcon = signupBtn ? signupBtn.querySelector('i') : null;
+                
+                if (signupBtn) {
+                    signupBtn.style.backgroundColor = 'white';
+                    signupBtn.style.color = 'navy';
+                    signupBtn.style.opacity = '1';
+                    signupBtn.style.visibility = 'visible';
+                }
+                
+                if (signupIcon) {
+                    signupIcon.style.color = 'navy';
+                }
+            }
+            
+            // Run immediately and also after a slight delay to ensure it takes effect
+            fixSignUpButton();
+            setTimeout(fixSignUpButton, 100);
+            
+            // Add hover effect to navbar links
+            const navLinks = document.querySelectorAll('.navbar .nav-link, .navbar .dropdown-item');
+            
+            navLinks.forEach(function(link) {
+                link.addEventListener('mouseenter', function() {
+                    this.style.color = 'white';
+                    this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.color = 'white';
+                    this.style.backgroundColor = 'transparent';
+                });
+            });
+            
+            // Add hover effect to footer links
+            const footerLinks = document.querySelectorAll('.footer a');
+            
+            footerLinks.forEach(function(link) {
+                link.addEventListener('mouseenter', function() {
+                    this.style.color = 'white';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.color = 'white';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

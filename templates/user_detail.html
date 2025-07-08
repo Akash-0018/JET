@@ -1,0 +1,1640 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ user.get_full_name|default:user.username }} - Profile{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #1a237e;
+        --primary-light: #e8eaf6;
+        --primary-dark: #0d1642;
+        --accent: #ff5722;
+        --accent-light: #ffebee;
+        --text-dark: #212121;
+        --text-medium: #546e7a;
+        --text-light: #78909c;
+        --bg-light: #f5f7fa;
+        --border-light: #e0e0e0;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --info: #2196f3;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+        --shadow-md: 0 5px 15px rgba(0,0,0,0.07);
+        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 1rem;
+        --transition: all 0.3s ease;
+    }
+    
+    /* Profile header */
+    .profile-header {
+        background-color: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-cover {
+        height: 180px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-cover-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='30' cy='10' r='2'/%3E%3Ccircle cx='50' cy='10' r='2'/%3E%3Ccircle cx='10' cy='30' r='2'/%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='50' cy='30' r='2'/%3E%3Ccircle cx='10' cy='50' r='2'/%3E%3Ccircle cx='30' cy='50' r='2'/%3E%3Ccircle cx='50' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .profile-content {
+        padding: 0 1.5rem 1.5rem;
+        text-align: center;
+    }
+    
+    .profile-avatar-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        margin-top: -70px;
+    }
+    
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid white;
+        margin: 0 auto;
+        display: block;
+        object-fit: cover;
+        box-shadow: var(--shadow-md);
+        background-color: white;
+    }
+    
+    .profile-name {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 1rem 0 0.25rem;
+    }
+    
+    .profile-headline {
+        color: var(--text-medium);
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Profile stats */
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        background-color: var(--bg-light);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 0;
+        margin: 1.5rem auto;
+        max-width: 80%;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-item {
+        padding: 0 1.5rem;
+        position: relative;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .stat-item:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background-color: var(--border-light);
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: block;
+        line-height: 1.2;
+    }    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        display: block;
+        margin-top: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Profile actions */
+    .profile-actions {
+        margin: 1.5rem 0;
+    }
+    
+    .btn-profile {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+    }
+    
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* Section titles */
+    .profile-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        align-items: center;
+    }
+    
+    .profile-section-title i {
+        color: var(--accent);
+        margin-right: 0.75rem;
+    }
+    
+    /* Info cards */
+    .info-card {
+        background-color: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: var(--transition);
+    }
+    
+    .info-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-3px);
+    }
+    
+    .info-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .profile-stats {
+            max-width: 100%;
+            padding: 1rem 0;
+        }
+        
+        .stat-item {
+            padding: 0 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_list' %}" class="text-decoration-none">Users</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ user.get_full_name|default:user.username }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="profile-header">
+                <!-- Cover Image -->
+                <div class="profile-cover">
+                    <div class="profile-cover-pattern"></div>
+                </div>
+                
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Avatar -->
+                    <div class="profile-avatar-container">
+                        <img src="{% if user.profile.profile_picture and user.profile.profile_picture.url %}{{ user.profile.profile_picture.url }}{% elif user.profile_picture and user.profile_picture.url %}{{ user.profile_picture.url }}{% else %}{% static 'home/default-img.jpg' %}{% endif %}" 
+                             alt="Profile Picture" class="profile-avatar">
+                    </div>
+                    
+                    <!-- User Info -->
+                    <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="profile-headline">{{ user.designation.name|default:"JET User" }}</p>
+                    
+                    <!-- Stats -->
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ enrolled_courses.count|default:"0" }}</span>
+                            <span class="stat-label">Courses</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ certifications.count|default:"0" }}</span>
+                            <span class="stat-label">Certifications</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ points|default:"0" }}</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="profile-actions">
+                        <button type="button" class="btn btn-primary btn-profile" data-toggle="modal" data-target="#user-profile-modal">
+                            <i class="fas fa-user-circle mr-2"></i>View Full Profile
+                        </button>
+                        {% if request.user.id == user.id or request.user.is_staff %}
+                        <a href="{% url 'user_update' user.pk %}" class="btn btn-outline-primary btn-profile ml-2">
+                            <i class="fas fa-edit mr-2"></i>Edit Profile
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Information Cards -->
+<div class="row mt-4">
+    <!-- About Card -->
+    <div class="col-md-6 mb-4">
+        <div class="info-card">
+            <div class="card-body">
+                <h5 class="profile-section-title">
+                    <i class="fas fa-info-circle"></i>About
+                </h5>
+                <p class="mb-0">{{ user.About|default:user.profile.About|default:"No bio information available." }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Information Card -->
+    <div class="col-md-6 mb-4">
+        <div class="info-card">
+            <div class="card-body">
+                <h5 class="profile-section-title">
+                    <i class="fas fa-address-card"></i>Contact Information
+                </h5>
+                <div class="contact-list">
+                    <div class="contact-item d-flex align-items-center mb-3">
+                        <div class="contact-icon mr-3">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value">{{ user.email|default:"Not provided" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item d-flex align-items-center mb-3">
+                        <div class="contact-icon mr-3">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-value">{{ user.contact_no|default:"Not provided" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item d-flex align-items-center">
+                        <div class="contact-icon mr-3">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label">Department</div>
+                            <div class="contact-value">{% if user.department %}{{ user.department }}{% elif user.profile.department %}{{ user.profile.department.name }}{% else %}Not specified{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Contact list styles */
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+    
+    .contact-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-light);
+        margin-bottom: 0.2rem;
+    }
+    
+    .contact-value {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+</style>
+        
+<!-- Learning Progress Card -->
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="info-card">
+            <div class="card-body">
+                <h5 class="profile-section-title">
+                    <i class="fas fa-graduation-cap"></i>Learning Progress
+                </h5>
+                
+                <div class="row">
+                    <!-- Course Completion -->
+                    <div class="col-md-6 mb-4">
+                        <div class="progress-block">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 font-weight-600">Course Completion</h6>
+                                <span class="progress-percentage">{{ completion_percentage }}%</span>
+                            </div>
+                            
+                            <div class="progress progress-modern">
+                                {% if total_courses > 0 %}
+                                <div class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%;" 
+                                    aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% else %}
+                                <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="progress-details mt-2">
+                                {% if total_courses > 0 %}
+                                <span class="progress-text">{{ completed_courses }} of {{ total_courses }} courses completed</span>
+                                {% else %}
+                                <span class="progress-text">No courses enrolled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Certification Progress -->
+                    <div class="col-md-6 mb-4">
+                        <div class="progress-block">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 font-weight-600">Certification Progress</h6>
+                                {% if certifications and certifications.count > 0 %}
+                                <span class="progress-percentage badge badge-success">Completed</span>
+                                {% else %}
+                                <span class="progress-percentage">0%</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="progress progress-modern">
+                                {% if certifications and certifications.count > 0 %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
+                                    aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% else %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%;" 
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="progress-details mt-2">
+                                {% with cert_count=certifications.count %}
+                                {% if cert_count > 0 %}
+                                <span class="progress-text">{{ cert_count }} certification{{ cert_count|pluralize }} earned</span>
+                                {% else %}
+                                <span class="progress-text">No certifications earned</span>
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Progress styles */
+    .progress-block {
+        padding: 0.5rem 0;
+    }
+    
+    .font-weight-600 {
+        font-weight: 600;
+    }
+    
+    .progress-modern {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 50px;
+        overflow: hidden;
+    }
+    
+    .progress-modern .progress-bar {
+        background-color: var(--primary);
+        border-radius: 50px;
+    }
+    
+    .progress-percentage {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-medium);
+    }
+    
+    .progress-text {
+        font-size: 0.875rem;
+        color: var(--text-light);
+    }
+    
+    .badge-success {
+        background-color: var(--success);
+        color: white;
+        font-weight: 500;
+        padding: 0.3em 0.6em;
+        border-radius: 4px;
+    }
+</style>
+        
+<!-- Badges & Achievements Card -->
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="info-card">
+            <div class="card-body">
+                <h5 class="profile-section-title">
+                    <i class="fas fa-medal"></i>Badges & Achievements
+                </h5>
+                
+                <div class="badges-container">
+                    {% with enrolled_count=enrolled_courses.count completed_count=completed_enrollments.count cert_count=certifications.count %}
+                    
+                    <!-- Quick Learner: Given if user completed at least 1 course -->
+                    {% if completed_count > 0 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-primary">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="badge-name">Quick Learner</div>
+                        <div class="badge-desc">Completed first course</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Top Performer: Given if user completed at least 3 courses -->
+                    {% if completed_count >= 3 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-success">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="badge-name">Top Performer</div>
+                        <div class="badge-desc">Completed 3+ courses</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Rising Star: Given if user enrolled in courses but hasn't completed them yet -->
+                    {% if enrolled_count > completed_count and enrolled_count > 0 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-info">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="badge-name">Rising Star</div>
+                        <div class="badge-desc">Actively learning</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Team Player: Given if user has earned points -->
+                    {% if points > 0 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-warning">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="badge-name">Team Player</div>
+                        <div class="badge-desc">Earned {{ points }} points</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Fast Tracker: Given if user has certifications -->
+                    {% if cert_count > 0 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-danger">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="badge-name">Fast Tracker</div>
+                        <div class="badge-desc">Earned certification</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Advanced Learner: Given if user has both courses and certifications -->
+                    {% if completed_count > 0 and cert_count > 0 %}
+                    <div class="badge-item">
+                        <div class="badge-icon badge-secondary">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="badge-name">Advanced Learner</div>
+                        <div class="badge-desc">Course & cert master</div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- If no achievements yet, show a placeholder -->
+                    {% if enrolled_count == 0 and cert_count == 0 %}
+                    <div class="no-badges">
+                        <i class="fas fa-certificate text-muted mb-3"></i>
+                        <p>No badges earned yet. Start enrolling in courses to earn badges!</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Badge styles */
+    .badges-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .badge-item {
+        flex: 0 0 calc(16.666% - 1.5rem);
+        text-align: center;
+        transition: var(--transition);
+        padding: 1rem 0.5rem;
+        border-radius: var(--radius-md);
+    }
+    
+    .badge-item:hover {
+        background-color: var(--bg-light);
+        transform: translateY(-5px);
+    }
+    
+    .badge-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .badge-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-dark);
+    }
+    
+    .badge-desc {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+    
+    .no-badges {
+        width: 100%;
+        text-align: center;
+        padding: 2rem 0;
+    }
+    
+    .no-badges i {
+        font-size: 2.5rem;
+        opacity: 0.3;
+        display: block;
+    }
+    
+    .no-badges p {
+        color: var(--text-light);
+        margin: 0;
+    }
+    
+    /* Badge colors */
+    .badge-primary {
+        background-color: rgba(26, 35, 126, 0.1);
+        color: var(--primary);
+    }
+    
+    .badge-success {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: var(--success);
+    }
+    
+    .badge-info {
+        background-color: rgba(33, 150, 243, 0.1);
+        color: var(--info);
+    }
+    
+    .badge-warning {
+        background-color: rgba(255, 152, 0, 0.1);
+        color: var(--warning);
+    }
+    
+    .badge-danger {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+    }
+    
+    .badge-secondary {
+        background-color: rgba(120, 144, 156, 0.1);
+        color: #78909c;
+    }
+    
+    @media (max-width: 991px) {
+        .badge-item {
+            flex: 0 0 calc(25% - 1.5rem);
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .badge-item {
+            flex: 0 0 calc(33.333% - 1.5rem);
+        }
+    }
+    
+    @media (max-width: 575px) {
+        .badge-item {
+            flex: 0 0 calc(50% - 1.5rem);
+        }
+    }
+</style>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Profile Modal -->
+<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userProfileModalLabel">
+                    <i class="fas fa-user-circle mr-2"></i>
+                    {{ user.get_full_name|default:user.username }}'s Profile
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Profile Sidebar -->
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <div class="profile-sidebar">
+                            <!-- Profile Image -->
+                            <div class="modal-profile-img-container">
+                                <img src="{% if user.profile.profile_picture and user.profile.profile_picture.url %}{{ user.profile.profile_picture.url }}{% elif user.profile_picture and user.profile_picture.url %}{{ user.profile_picture.url }}{% else %}{% static 'home/default-img.jpg' %}{% endif %}" 
+                                     alt="Profile Picture" class="modal-profile-img">
+                            </div>
+                            
+                            <!-- User Info -->
+                            <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                            <p class="text-muted mb-2">{{ user.designation.name|default:"JET User" }}</p>
+                            <div class="department-badge">{% if user.department %}{{ user.department }}{% elif user.profile.department %}{{ user.profile.department.name }}{% else %}Unspecified Department{% endif %}</div>
+                            
+                            <!-- Stats -->
+                            <div class="stats-summary">
+                                <div class="stat-summary-item">
+                                    <div class="summary-value">{{ enrolled_courses.count|default:"0" }}</div>
+                                    <div class="summary-label">Courses</div>
+                                </div>
+                                <div class="stat-summary-item">
+                                    <div class="summary-value">{{ certifications.count|default:"0" }}</div>
+                                    <div class="summary-label">Certs</div>
+                                </div>
+                                <div class="stat-summary-item">
+                                    <div class="summary-value">{{ points|default:"0" }}</div>
+                                    <div class="summary-label">Points</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="col-md-8">
+                        <ul class="nav nav-tabs modal-tabs" id="profileTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">
+                                    <i class="fas fa-info-circle mr-2"></i>Basic Info
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="courses-tab" data-toggle="tab" href="#courses" role="tab" aria-controls="courses" aria-selected="false">
+                                    <i class="fas fa-book-open mr-2"></i>Courses
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="certifications-tab" data-toggle="tab" href="#certifications" role="tab" aria-controls="certifications" aria-selected="false">
+                                    <i class="fas fa-certificate mr-2"></i>Certifications
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="activity-tab" data-toggle="tab" href="#activity" role="tab" aria-controls="activity" aria-selected="false">
+                                    <i class="fas fa-chart-line mr-2"></i>Activity
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content pt-4" id="profileTabsContent">
+                            <!-- Basic Info Tab -->
+                            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <div class="info-label">Full Name</div>
+                                        <div class="info-value">{{ user.get_full_name|default:"Not provided" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Email</div>
+                                        <div class="info-value">{{ user.email|default:"Not provided" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Phone</div>
+                                        <div class="info-value">{{ user.contact_no|default:"Not provided" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Department</div>
+                                        <div class="info-value">{% if user.department %}{{ user.department }}{% elif user.profile.department %}{{ user.profile.department.name }}{% else %}Not specified{% endif %}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Position</div>
+                                        <div class="info-value">{{ user.designation.name|default:"Not specified" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Joined</div>
+                                        <div class="info-value">{{ user.date_joined|date:"F j, Y" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Last Login</div>
+                                        <div class="info-value">{{ user.last_login|date:"F j, Y H:i" }}</div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <div class="info-label">Bio</div>
+                                        <div class="info-value">{{ user.About|default:user.profile.About|default:"No bio information available." }}</div>
+                                    </div>
+                                </div>
+                            </div>                            <!-- Courses Tab -->
+                            <div class="tab-pane fade" id="courses" role="tabpanel" aria-labelledby="courses-tab">
+                                <div class="course-list">
+                                    {% if enrolled_courses %}
+                                        {% for enrollment in enrolled_courses %}
+                                            <div class="course-item">
+                                                <div class="course-header">
+                                                    <div class="course-title">{{ enrollment.course.name }}</div>
+                                                    <div class="course-status">
+                                                        {% if enrollment.course_progress == 100 %}
+                                                            <span class="status-badge completed">
+                                                                <i class="fas fa-check-circle"></i> Completed
+                                                            </span>
+                                                        {% elif enrollment.course_progress > 0 %}
+                                                            <span class="status-badge in-progress">
+                                                                <i class="fas fa-spinner"></i> In Progress
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="status-badge not-started">
+                                                                <i class="fas fa-clock"></i> Not Started
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="course-progress">
+                                                    <div class="progress course-progress-bar">
+                                                        <div class="progress-bar {% if enrollment.course_progress == 100 %}bg-success{% elif enrollment.course_progress > 0 %}bg-warning{% else %}bg-secondary{% endif %}" 
+                                                             style="width: {{ enrollment.course_progress|default:0 }}%;" 
+                                                             aria-valuenow="{{ enrollment.course_progress|default:0 }}" 
+                                                             aria-valuemin="0" 
+                                                             aria-valuemax="100">
+                                                        </div>
+                                                    </div>
+                                                    <div class="course-progress-text">
+                                                        {% if enrollment.course_progress == 100 and enrollment.course_completed_at %}
+                                                            <span>Completed on {{ enrollment.course_completed_at|date:"F j, Y" }}</span>
+                                                        {% elif enrollment.course_progress > 0 %}
+                                                            <span>{{ enrollment.course_progress|default:0 }}% complete</span>
+                                                        {% else %}
+                                                            <span>Enrolled on {{ enrollment.course_enrolled_at|date:"F j, Y"|default:"Unknown date" }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if enrollment.course.description %}
+                                                    <div class="course-description">
+                                                        {{ enrollment.course.description|truncatechars:120 }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="empty-state">
+                                            <i class="fas fa-book-open"></i>
+                                            <p>No courses enrolled yet.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Certifications Tab -->
+                            <div class="tab-pane fade" id="certifications" role="tabpanel" aria-labelledby="certifications-tab">
+                                <div class="cert-list">
+                                    {% if certifications %}
+                                        {% for certification in certifications %}
+                                            <div class="cert-item">
+                                                <div class="cert-header">
+                                                    <div class="cert-title">{{ certification.certification.name }}</div>
+                                                    <div class="cert-status">
+                                                        {% if certification.completed_at %}
+                                                            <span class="status-badge completed">
+                                                                <i class="fas fa-award"></i> Issued
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="status-badge in-progress">
+                                                                <i class="fas fa-spinner"></i> In Progress
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="cert-details">
+                                                    {% if certification.completed_at %}
+                                                        <div class="cert-date">Issued on {{ certification.completed_at|date:"F j, Y" }}</div>
+                                                        {% if certification.certification.link %}
+                                                        <div class="cert-action">
+                                                            <a href="{{ certification.certification.link }}" class="btn-certificate" target="_blank">
+                                                                <i class="fas fa-external-link-alt"></i> View Certificate
+                                                            </a>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% with progress=certification.certification.progress|default:"0" %}
+                                                        <div class="cert-progress">
+                                                            <div class="progress cert-progress-bar">
+                                                                <div class="progress-bar bg-warning" 
+                                                                     style="width: {{ progress|default:0 }}%;" 
+                                                                     aria-valuenow="{{ progress|default:0 }}" 
+                                                                     aria-valuemin="0" 
+                                                                     aria-valuemax="100"></div>
+                                                            </div>
+                                                            <div class="cert-progress-text">{{ progress }}% complete</div>
+                                                        </div>
+                                                        {% endwith %}
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                {% if certification.certification.description %}
+                                                    <div class="cert-description">
+                                                        {{ certification.certification.description|truncatechars:120 }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="empty-state">
+                                            <i class="fas fa-certificate"></i>
+                                            <p>No certifications earned yet.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Activity Tab -->
+                            <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                                <div class="activity-timeline">
+                                    {% if completed_enrollments %}
+                                        {% for enrollment in completed_enrollments|slice:":5" %}
+                                        <div class="activity-item">
+                                            <div class="activity-icon completed">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Completed "{{ enrollment.course.name }}"</div>
+                                                <div class="activity-time">{{ enrollment.course_completed_at|timesince }} ago</div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if certifications %}
+                                        {% for certification in certifications|slice:":5" %}
+                                        <div class="activity-item">
+                                            <div class="activity-icon certified">
+                                                <i class="fas fa-award"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Earned "{{ certification.certification.name }}" certification</div>
+                                                <div class="activity-time">{% if certification.completed_at %}{{ certification.completed_at|timesince }} ago{% else %}In progress{% endif %}</div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if enrolled_courses %}
+                                        {% for enrollment in enrolled_courses|slice:":5" %}
+                                            {% if enrollment.course_progress < 100 %}
+                                            <div class="activity-item">
+                                                <div class="activity-icon enrolled">
+                                                    <i class="fas fa-book"></i>
+                                                </div>
+                                                <div class="activity-content">
+                                                    <div class="activity-title">Enrolled in "{{ enrollment.course.name }}"</div>
+                                                    <div class="activity-time">{{ enrollment.course_enrolled_at|timesince }} ago</div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    
+                                    {% if not enrolled_courses and not certifications %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-chart-line"></i>
+                                        <p>No recent activity. User hasn't enrolled in any courses or certifications yet.</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>Close
+                </button>
+                {% if request.user.id == user.id or request.user.is_staff %}
+                <a href="{% url 'user_update' user.pk %}" class="btn btn-primary">
+                    <i class="fas fa-edit mr-2"></i>Edit Profile
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal specific styles */
+    .modal-header {
+        background-color: var(--primary);
+        color: white;
+        padding: 1.25rem 1.5rem;
+        border-bottom: none;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+        background-color: var(--bg-light);
+    }
+    
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+    
+    .modal-content {
+        border: none;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .close {
+        color: white;
+        opacity: 0.8;
+        text-shadow: none;
+        transition: var(--transition);
+    }
+    
+    .close:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    
+    /* Profile sidebar in modal */
+    .profile-sidebar {
+        background-color: white;
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+    }
+    
+    .modal-profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1rem;
+    }
+    
+    .department-badge {
+        display: inline-block;
+        background-color: var(--primary-light);
+        color: var(--primary);
+        font-size: 0.85rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        margin: 0.5rem 0 1.5rem;
+    }
+    
+    .stats-summary {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+    
+    .stat-summary-item {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .summary-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+    }
+    
+    .summary-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Modal tabs */
+    .modal-tabs {
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .modal-tabs .nav-link {
+        border: none;
+        color: var(--text-medium);
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        position: relative;
+        transition: var(--transition);
+    }
+    
+    .modal-tabs .nav-link:hover {
+        color: var(--primary);
+    }
+    
+    .modal-tabs .nav-link.active {
+        color: var(--primary);
+        background-color: transparent;
+    }
+    
+    .modal-tabs .nav-link.active:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: var(--primary);
+    }
+    
+    /* Info list */
+    .info-list {
+        background-color: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+    
+    .info-item {
+        display: flex;
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem 1.25rem;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        width: 120px;
+        font-weight: 600;
+        color: var(--text-medium);
+    }
+    
+    .info-value {
+        flex: 1;
+        color: var(--text-dark);
+    }
+    
+    /* Course styles */
+    .course-list, .cert-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .course-item, .cert-item {
+        background-color: white;
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .course-header, .cert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .course-title, .cert-title {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-dark);
+    }
+    
+    .course-status, .cert-status {
+        margin-left: 0.5rem;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .status-badge i {
+        margin-right: 0.35rem;
+    }
+    
+    .status-badge.completed {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: var(--success);
+    }
+    
+    .status-badge.in-progress {
+        background-color: rgba(255, 152, 0, 0.1);
+        color: var(--warning);
+    }
+    
+    .status-badge.not-started {
+        background-color: rgba(120, 144, 156, 0.1);
+        color: var(--text-light);
+    }
+    
+    .course-progress, .cert-progress {
+        margin-bottom: 1rem;
+    }
+    
+    .course-progress-bar, .cert-progress-bar {
+        height: 6px;
+        border-radius: 50px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-progress-text, .cert-progress-text {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+    
+    .course-description, .cert-description {
+        font-size: 0.875rem;
+        color: var(--text-medium);
+        margin-top: 0.75rem;
+    }
+    
+    .cert-date {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+    
+    .btn-certificate {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--primary-light);
+        color: var(--primary);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .btn-certificate:hover {
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-certificate i {
+        margin-right: 0.5rem;
+    }
+    
+    /* Activity timeline */
+    .activity-timeline {
+        position: relative;
+    }
+    
+    .activity-timeline:before {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background-color: var(--border-light);
+        z-index: 0;
+    }
+    
+    .activity-item {
+        display: flex;
+        padding: 1rem 0;
+        position: relative;
+    }
+    
+    .activity-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        z-index: 1;
+    }
+    
+    .activity-icon.completed {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: var(--success);
+    }
+    
+    .activity-icon.certified {
+        background-color: rgba(33, 150, 243, 0.2);
+        color: var(--info);
+    }
+    
+    .activity-icon.enrolled {
+        background-color: rgba(255, 152, 0, 0.2);
+        color: var(--warning);
+    }
+    
+    .activity-title {
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+    }
+    
+    .activity-time {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+    
+    /* Empty state */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        color: var(--text-light);
+        text-align: center;
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+    
+    .empty-state p {
+        font-size: 0.95rem;
+        margin: 0;
+        max-width: 250px;
+    }
+    
+    /* Responsive fixes */
+    @media (max-width: 767px) {
+        .info-item {
+            flex-direction: column;
+        }
+        
+        .info-label {
+            width: 100%;
+            margin-bottom: 0.25rem;
+        }
+        
+        .course-header, .cert-header {
+            flex-direction: column;
+        }
+        
+        .course-status, .cert-status {
+            margin-left: 0;
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+
+<style>
+    /* Additional styles for timeline in modal */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 9px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: var(--card-shadow);
+    }
+    
+    .timeline-content {
+        padding-bottom: 10px;
+    }
+    
+    /* Light background colors for badges */
+    .bg-primary-light {
+        background-color: rgba(0, 0, 128, 0.1);
+    }
+    
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    
+    .bg-info-light {
+        background-color: rgba(23, 162, 184, 0.1);
+    }
+    
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+    
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .bg-secondary-light {
+        background-color: rgba(108, 117, 125, 0.1);
+    }
+      /* Badge icons */    .badge-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    /* Fix for courses and certifications card display */
+    .list-group-item {
+        border-radius: 0.25rem;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
+    
+    .list-group-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }    /* Clean, modern modal design */
+    .modal-dialog.modal-lg {
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+    
+    .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 25px;
+        overflow-x: hidden;
+        background-color: #f9f9f9;
+    }
+    
+    .modal-header {
+        padding: 15px 25px;
+        border-bottom: none;
+    }
+    
+    .modal-content {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .modal-dialog.modal-lg {
+            max-width: 95%;
+        }
+        
+        .modal-body {
+            max-height: 80vh;
+        }
+    }
+    
+    /* Fix for profile section */
+    #user-profile-modal .col-md-4 {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: fit-content;
+    }
+    
+    /* Ensure modal visibility and scrolling */
+    .modal-open .modal {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }    /* Fix for modal content */
+    .modal-content {
+        height: auto;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    /* Card styles outside the modal */
+    .profile-info .stat-value {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+      /* Fix for profile sidebar */
+    .profile-sidebar {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        height: fit-content;
+        max-height: 100%;
+        overflow: visible; /* Changed from auto to visible to prevent cutting off content */
+    }
+      /* Profile image container in modal */
+    .modal-profile-img-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    /* Avatar container for main profile */
+    .profile-avatar-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        z-index: 20;
+    }
+    
+    /* Modal profile image */
+    .modal-profile-img {
+        display: block;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Fix tab content height and scrolling */
+    .tab-content {
+        min-height: 300px;
+        overflow: auto;
+    }
+    
+    /* Fix modal tab styles */
+    .nav-tabs .nav-link {
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: var(--primary);
+        border-color: #dee2e6 #dee2e6 #fff;
+    }
+    
+    /* Make sure the table in info tab is visible */
+    .tab-pane .table {
+        margin-bottom: 0;
+    }
+    
+    /* Ensure consistent table styling */
+    .tab-pane .table th {
+        width: 30%;
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    /* Improve table hover effect */
+    .tab-pane .table tr:hover {
+        background-color: rgba(0, 0, 128, 0.02);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Ensure we have numeric values for stats
+        $('.stat-value, .summary-value').each(function() {
+            var text = $(this).text().trim();
+            // Check for QuerySet or objects that might have been rendered directly
+            if (text.includes('<QuerySet') || text.includes('[<') || text.includes('object')) {
+                $(this).text('0');
+            }
+        });
+        
+        // Handle tab switching
+        $('#profileTabs a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+        
+        // Reset and show first tab when modal opens
+        $('#user-profile-modal').on('shown.bs.modal', function() {
+            $('#profileTabs a:first').tab('show');
+        });
+        
+        // Fix any style issues in IE
+        if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > -1) {
+            $('.status-badge').css('display', 'inline-block');
+            $('.info-item').css('display', 'block');
+        }
+    });
+</script>
+{% endblock %}

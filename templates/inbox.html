@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+
+{% block title %}Inbox - JET{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Inbox</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Email Sidebar -->
+        <div class="col-md-3 col-lg-2 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'email_form' %}" class="btn btn-primary btn-block rounded-0 py-3">
+                            <i class="fas fa-plus-circle mr-2"></i>Compose
+                        </a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'inbox' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-inbox mr-2"></i>Inbox
+                        </a>
+                        <a href="{% url 'sent_items' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-paper-plane mr-2"></i>Sent Items
+                        </a>
+                        <a href="{% url 'drafts' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file mr-2"></i>Drafts
+                        </a>
+                        <a href="{% url 'replies' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-reply mr-2"></i>Reply Mails
+                        </a>
+                        <a href="{% url 'templates' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-alt mr-2"></i>Templates
+                        </a>
+                        <a href="{% url 'schedule_email' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-clock mr-2"></i>Scheduled
+                        </a>
+                        <a href="{% url 'generate_ai' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-robot mr-2"></i>AI Writeup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-inbox text-primary mr-2"></i>Inbox
+                        </h4>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" id="emailSearch" class="form-control" placeholder="Search emails...">
+                            <div class="input-group-append">
+                                <span class="input-group-text bg-white border-left-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="email-list">
+                      {% if emails %}
+                      {% for email in emails %}
+                      <div class="email-item p-3 border-bottom hover-bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center mb-1">
+                                    <div class="text-dark font-weight-bold mr-2">{{ email.sender.username }}</div>
+                                    <small class="text-muted ml-auto">{{ email.created_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <div class="mb-1">
+                                    <span class="font-weight-bold">{{ email.subject }}</span>
+                                </div>
+                                <div class="text-muted">{{ email.message|truncatewords:15 }}</div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <div class="btn-group">
+                                    <a href="{% url 'email_detail' email.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye mr-1"></i> View
+                                    </a>
+                                    <a href="{% url 'reply_email' email.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-reply mr-1"></i> Reply
+                                    </a>
+                                    <a href="{% url 'email_delete' email.id %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>                      </div>
+                    {% empty %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-inbox fa-4x text-muted"></i>
+                        </div>
+                        <h5 class="text-muted">Your inbox is empty</h5>
+                        <p class="text-muted">No emails to display</p>
+                        <a href="{% url 'email_form' %}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus-circle mr-2"></i>Compose a new email
+                        </a>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .email-list {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .email-item {
+        transition: all 0.2s ease;
+    }
+    
+    .email-item:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .hover-bg-light:hover {
+        background-color: #f8f9fa;
+    }
+    
+    /* Hide back button as we're using breadcrumbs now */
+    .back-button {
+        display: none;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Email search functionality
+        $("#emailSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $(".email-item").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+            
+            // Show no results message if needed
+            if ($(".email-item:visible").length === 0 && value !== "") {
+                if ($("#noResults").length === 0) {
+                    $(".email-list").append('<div id="noResults" class="text-center py-4"><p class="text-muted">No emails match your search</p></div>');
+                }
+            } else {
+                $("#noResults").remove();
+            }
+        });
+    });
+</script>
+<style>
+.sidebar {
+  position: fixed;
+  margin-top: 0%;
+  width: 200px;
+  padding: 40px;
+  border-right: 1px solid #ddd;
+  background-color: navy;
+  color: white;
+}
+
+.sidebar ul li {
+  color: white;
+  padding: 15px;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+  background-color: navy;
+}
+
+.sidebar ul li a {
+  font-weight: 500;
+  padding: 5px;
+  display: block;
+  text-transform: capitalize;
+  text-decoration: none;
+  font-size: 16px;
+  background-color: navy;
+}
+
+.sidebar ul li a i {
+  color: white;
+  width: 40px;
+  text-align: center;
+ 
+}
+
+.sidebar ul li:hover {
+  background:#ddd;
+  color:white;
+}
+
+.sidebar ul li:hover a {
+  background-color:navy;
+  color: white;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  margin-left: 300px;
+  width: 300px;
+  height: 40px;
+  padding: 12px;
+  border-radius: 20px; 
+  background-color: #fff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+.row{
+  display:flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+.search-box input[type="text"] {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  padding: 0 12px; 
+  font-size: 16px;
+}
+
+.button .fa-solid {
+  font-size: 12px; 
+  color: #555;
+  width:20px
+  cursor: pointer;
+}
+::placeholder{
+  color:#555;
+}
+button{
+  background: transparent;
+  border: 0;
+  outline:0;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+
+.inbox-container {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  margin-right:90px;
+}
+
+h2 {
+  color: navy;
+}
+
+.email-item {
+  border-bottom: 1px solid #eee; 
+  padding: 15px;
+}
+
+.email-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.email-meta {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.email-subject {
+  font-weight: bold;
+}
+
+.email-preview {
+  color: #555;
+}
+
+.email-actions {
+  margin-top: 10px;
+}
+
+.email-actions a {
+  margin-right: 5px;
+}
+
+
+.btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px; 
+  cursor: pointer; 
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white; 
+}
+
+.btn-secondary {
+  background-color: #6c757d; 
+  color: white; 
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px; 
+  }
+  .main-content {
+    margin-left: 60px; 
+  } 
+}
+</style>
+{% endblock %}

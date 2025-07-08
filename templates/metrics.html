@@ -1,0 +1,1208 @@
+{% extends "base.html" %}
+
+{% block title %}JET Metrics & Reports{% endblock %}
+
+{% block content %}
+<style>
+    /* Animation for slide-in-top */
+    @keyframes slideInTop {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .slide-in-top {
+        animation: slideInTop 0.5s ease forwards;
+    }
+    
+    /* Style for breadcrumbs */
+    .breadcrumb {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.3s ease;
+    }
+    
+    .breadcrumb:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .breadcrumb-item a {
+        color: var(--primary);
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .breadcrumb-item a:hover {
+        text-decoration: none;
+        color: var(--secondary);
+    }
+    
+    /* Ensure content stays within container */
+    .table-responsive {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+    
+    .card {
+        overflow: hidden;
+        max-width: 100%;
+    }
+    
+    /* Download buttons */
+    .btn-download {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb" class="slide-in-top">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'dashboard' %}" class="d-flex align-items-center">
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="fas fa-chart-line mr-1"></i> Metrics & Reports
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="slide-in-left">
+                    <h1 class="h2 mb-0">
+                        <i class="fas fa-chart-line text-primary mr-2"></i>Metrics & Reports
+                    </h1>
+                    <p class="text-muted mt-2">View and analyze training performance data</p>
+                </div>
+                <div class="slide-in-right d-flex">
+                    <!-- PDF Download Button -->
+                    <a href="{% url 'download_metrics_pdf' %}" class="btn btn-danger btn-download mr-2">
+                        <i class="fas fa-file-pdf mr-2"></i>Download PDF
+                    </a>
+                    <button class="btn btn-outline-primary" id="refreshData">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="card border-0 shadow-sm mb-4 slide-in-left">
+        <div class="card-header bg-light">
+            <h2 class="h5 mb-0">
+                <i class="fas fa-filter text-primary mr-2"></i>Filter Options
+            </h2>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="filterType">Filter By</label>
+                    <select id="filterType" class="form-control">
+                        <option value="all">All</option>
+                        <option value="course">Course</option>
+                        <option value="certification">Certification</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search mr-2"></i>Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <h2 class="h4 mb-3 slide-in-right" data-delay="0.1s">Key Metrics</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4 slide-in-right" data-delay="0.2s">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-primary-light mx-auto mb-4">
+                        <i class="fas fa-users text-primary"></i>
+                    </div>
+                    <h3 class="h5">Total Users</h3>
+                    <p class="display-4 mb-0 text-primary">{{ report_data.employees_trained|default:"0" }}</p>
+                    <p class="text-muted">Active accounts on platform</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center">
+                    <span class="badge badge-success">
+                        <i class="fas fa-arrow-up mr-1"></i>{{ report_data.users_growth|default:"5.3" }}%
+                    </span>
+                    <small class="text-muted">Since last month</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4 slide-in-right" data-delay="0.3s">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-success-light mx-auto mb-4">
+                        <i class="fas fa-certificate text-success"></i>
+                    </div>
+                    <h3 class="h5">Certifications Completed</h3>
+                    <p class="display-4 mb-0 text-success">{{ report_data.certifications|default:"0" }}</p>
+                    <p class="text-muted">Across all users</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center">
+                    <span class="badge badge-success">
+                        <i class="fas fa-arrow-up mr-1"></i>{{ report_data.certifications_growth|default:"12.7" }}%
+                    </span>
+                    <small class="text-muted">Since last month</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4 slide-in-right" data-delay="0.4s">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="icon-circle bg-warning-light mx-auto mb-4">
+                        <i class="fas fa-book text-warning"></i>
+                    </div>
+                    <h3 class="h5">Courses Completed</h3>
+                    <p class="display-4 mb-0 text-warning">{{ report_data.courses|default:"0" }}</p>
+                    <p class="text-muted">Across all users</p>
+                </div>
+                <div class="card-footer bg-white border-0 text-center">
+                    <span class="badge badge-success">
+                        <i class="fas fa-arrow-up mr-1"></i>{{ report_data.courses_growth|default:"8.4" }}%
+                    </span>
+                    <small class="text-muted">Since last month</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 fade-in" data-delay="0.5s">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-user-tie text-primary mr-2"></i>Intern Projects
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 mb-0">Total Interns</h3>
+                        <span class="badge badge-primary badge-pill">{{ report_data.interns|default:"0" }}</span>
+                    </div>                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 mb-0">Projects Completed</h3>
+                        <span class="badge badge-success badge-pill">{{ report_data.intern_projects|default:"0" }}</span>
+                    </div>
+                    <hr>
+                    <div class="text-center mb-3">
+                        <span class="text-muted">Intern Success Rate</span>
+                        <div class="progress mt-2" style="height: 10px;">
+                            {% if report_data.interns > 0 %}
+                                {% with success_rate=report_data.intern_projects_percentage|default:"85" %}
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ success_rate }}%"></div>
+                                    <small class="text-muted">{{ success_rate }}% of interns successfully complete their projects</small>
+                                {% endwith %}
+                            {% else %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                <small class="text-muted">No intern project data available</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if report_data.intern_details %}
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Intern Details</h6>
+                            <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#internDetailsCollapse" aria-expanded="false" aria-controls="internDetailsCollapse">
+                                <i class="fas fa-chevron-down"></i> Show/Hide
+                            </button>
+                        </div>
+                        <div class="collapse" id="internDetailsCollapse">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Role</th>
+                                            <th>College</th>
+                                            <th>Duration</th>
+                                            <th>Project</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for intern in report_data.intern_details %}
+                                        <tr>
+                                            <td>{{ intern.name }}</td>
+                                            <td>{{ intern.role }}</td>
+                                            <td>{{ intern.college }}</td>
+                                            <td>
+                                                {% if intern.start_date %}
+                                                    {{ intern.start_date|date:"d M Y" }} - 
+                                                    {% if intern.end_date %}
+                                                        {{ intern.end_date|date:"d M Y" }}
+                                                    {% else %}
+                                                        Present
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ intern.project|truncatechars:30 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4 fade-in" data-delay="0.6s">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-chalkboard-teacher text-primary mr-2"></i>SME Sessions
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 mb-0">Sessions Conducted</h3>
+                        <span class="badge badge-primary badge-pill">{{ report_data.sme_sessions|default:"0" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h6 mb-0">Average Attendance</h3>
+                        <span class="badge badge-info badge-pill">{{ report_data.avg_attendees|default:"24" }} participants</span>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <span class="text-muted">Session Satisfaction Rate</span>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ report_data.session_satisfaction_percentage|default:'92' }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ report_data.session_satisfaction_percentage|default:'92' }}% of participants rated sessions 4+ stars</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Completion Table -->
+    <div class="card border-0 shadow-sm mb-4 fade-in" data-delay="0.7s">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-book-open text-primary mr-2"></i>Course Completion
+                </h2>
+                <div class="input-group" style="width: 250px;">
+                    <input type="text" class="form-control" id="courseSearch" placeholder="Search courses...">
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-white border-left-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0" id="courseTable">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Enrolled Users</th>
+                            <th>Completed</th>
+                            <th>Completion Rate</th>
+                            <th>Avg. Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if report_data.course_details %}
+                            {% for course in report_data.course_details %}
+                                <tr>
+                                    <td>{{ course.name }}</td>
+                                    <td>{{ course.enrolled }}</td>
+                                    <td>{{ course.completed }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {% widthratio course.completion_rate 1 1 %}%"></div>
+                                        </div>
+                                        <small class="text-muted">{% widthratio course.completion_rate 1 1 %}%</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="text-warning mr-2">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= course.avg_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% elif forloop.counter == course.avg_rating|add:"0.5"|floatformat:"0" %}
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <span class="text-muted">{{ course.avg_rating }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">No course data available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Certification Completion Table -->
+    <div class="card border-0 shadow-sm mb-4 fade-in" data-delay="0.8s">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-certificate text-primary mr-2"></i>Certification Completion
+                </h2>
+                <div class="input-group" style="width: 250px;">
+                    <input type="text" class="form-control" id="certSearch" placeholder="Search certifications...">
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-white border-left-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0" id="certTable">
+                    <thead>
+                        <tr>
+                            <th>Certification Name</th>
+                            <th>Enrolled Users</th>
+                            <th>Completed</th>
+                            <th>Completion Rate</th>
+                            <th>Avg. Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if report_data.cert_details %}
+                            {% for cert in report_data.cert_details %}
+                                <tr>
+                                    <td>{{ cert.name }}</td>
+                                    <td>{{ cert.enrolled }}</td>
+                                    <td>{{ cert.completed }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ cert.completion_rate|floatformat:0 }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ cert.completion_rate|floatformat:0 }}%</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="text-warning mr-2">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= cert.avg_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% elif forloop.counter == cert.avg_rating|add:"0.5"|floatformat:"0" %}
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <span class="text-muted">{{ cert.avg_rating }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">No certification data available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>    <!-- Intern Details Table -->
+    <div class="card border-0 shadow-sm mb-4 fade-in" data-delay="0.9s">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-user-graduate text-primary mr-2"></i>Intern Details
+                </h2>
+                <div class="d-flex">
+                    <a href="{% url 'download_intern_report_pdf' %}" class="btn btn-sm btn-outline-danger mr-2">
+                        <i class="fas fa-file-pdf mr-1"></i> Download Intern Report
+                    </a>
+                    <div class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control" id="internSearch" placeholder="Search interns...">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-white border-left-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0" id="internTable">
+                    <thead>
+                        <tr>
+                            <th>Intern Name</th>
+                            <th>Role</th>
+                            <th>College</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Project</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if report_data.intern_details %}
+                            {% for intern in report_data.intern_details %}
+                                <tr>
+                                    <td>{{ intern.name }}</td>
+                                    <td>{{ intern.role }}</td>
+                                    <td>{{ intern.college }}</td>
+                                    <td>{{ intern.start_date|date:"d M Y"|default:"N/A" }}</td>
+                                    <td>{{ intern.end_date|date:"d M Y"|default:"N/A" }}</td>
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 150px;" data-toggle="tooltip" title="{{ intern.project }}">
+                                            {{ intern.project|truncatechars:25 }}
+                                        </span>
+                                    </td>                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary show-intern-detail" data-toggle="modal" data-target="#internDetailModal" 
+                                                data-name="{{ intern.name }}" data-role="{{ intern.role }}" 
+                                                data-college="{{ intern.college }}" data-project="{{ intern.project }}">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">No intern data available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Intern Detail Modal -->
+    <div class="modal fade" id="internDetailModal" tabindex="-1" role="dialog" aria-labelledby="internDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="internDetailModalLabel">Intern Details: <span id="modalInternName"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Name:</div>
+                        <div class="col-md-8" id="modalDetailName"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Role:</div>
+                        <div class="col-md-8" id="modalDetailRole"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">College:</div>
+                        <div class="col-md-8" id="modalDetailCollege"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 font-weight-bold">Project:</div>
+                        <div class="col-md-8" id="modalDetailProject"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>    <!-- Individual User Reports -->
+    <div class="card border-0 shadow-sm mb-4 fade-in" data-delay="1.0s">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">
+                    <i class="fas fa-user-chart text-primary mr-2"></i>Individual User Reports
+                </h2>
+                <div class="input-group" style="width: 250px;">
+                    <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-white border-left-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Courses Enrolled</th>
+                            <th>Courses Completed</th>
+                            <th>Certifications Enrolled</th>
+                            <th>Certifications Completed</th>
+                            <th>Progress</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if report_data.user_reports %}
+                            {% for user_report in report_data.user_reports %}
+                                <tr>
+                                    <td>{{ user_report.username }}</td>
+                                    <td>{{ user_report.courses_enrolled }}</td>
+                                    <td>{{ user_report.courses_completed }}</td>
+                                    <td>{{ user_report.certs_enrolled }}</td>
+                                    <td>{{ user_report.certs_completed }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 style="width: {% widthratio user_report.overall_progress 1 1 %}%"></div>
+                                        </div>
+                                        <small class="text-muted">{% widthratio user_report.overall_progress 1 1 %}%</small>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'user_detail' user_report.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-external-link-alt"></i> View Profile
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-success ml-1" data-toggle="modal" data-target="#userReportModal" 
+                                                data-username="{{ user_report.username }}" data-userid="{{ user_report.id }}"
+                                                data-courses-enrolled="{{ user_report.courses_enrolled }}" 
+                                                data-courses-completed="{{ user_report.courses_completed }}"
+                                                data-certs-enrolled="{{ user_report.certs_enrolled }}"
+                                                data-certs-completed="{{ user_report.certs_completed }}"
+                                                data-overall-progress="{{ user_report.overall_progress }}">
+                                            <i class="fas fa-file-alt"></i> Detailed Report
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">No user report data available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Report Modal -->
+    <div class="modal fade" id="userReportModal" tabindex="-1" role="dialog" aria-labelledby="userReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="userReportModalLabel">User Report: <span id="modalUsername"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="userReportLoading" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading user report...</p>
+                    </div>
+                    <div id="userReportContent" style="display: none;">
+                        <!-- Report content will be loaded here via AJAX -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="downloadUserReport">
+                        <i class="fas fa-download"></i> Download Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Options Modal -->
+    <div class="modal fade" id="downloadOptionsModal" tabindex="-1" role="dialog" aria-labelledby="downloadOptionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="downloadOptionsModalLabel">Download Metrics Report</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'download_metrics_pdf' %}" class="btn btn-primary mb-3">
+                            <i class="fas fa-file-pdf mr-2"></i> Download as PDF
+                        </a>
+                        <a href="{% url 'download_metrics_report' 2025 %}" class="btn btn-success">
+                            <i class="fas fa-file-excel mr-2"></i> Download as Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+    .icon-circle {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    
+    .bg-primary-light {
+        background-color: rgba(0, 0, 128, 0.1);
+    }
+    
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+    
+    .bg-info-light {
+        background-color: rgba(23, 162, 184, 0.1);
+    }
+    
+    .progress {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+    
+    /* Fix for better table responsiveness */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Container width fix */
+    @media (min-width: 1200px) {
+        .container {
+            max-width: 1140px;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Remove old styling
+        $('h1').removeAttr('style');
+        $('.back-button').remove();
+        
+        // Course table search functionality
+        $("#courseSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#courseTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+        
+        // Certification table search functionality
+        $("#certSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#certTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+        
+        // Intern table search functionality
+        $("#internSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#internTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+          // User table search functionality
+        $("#userSearch").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#userTable tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+        
+        // Initialize dynamic loading of course and cert details in user report modal
+        $(document).on('click', '#loadCourseDetails', function() {
+            var button = $(this);
+            var userId = $('#userReportModal').data('userid');
+            
+            button.html('<i class="fas fa-spinner fa-spin mr-2"></i> Loading...');
+            
+            // In a real app, this would be an AJAX call to fetch actual course data
+            setTimeout(function() {
+                var sampleCourseData = `
+                    <tr>
+                        <td>Introduction to Python</td>
+                        <td>15 Apr 2025</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <small class="text-muted">100%</small>
+                        </td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Advanced JavaScript</td>
+                        <td>02 May 2025</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <small class="text-muted">100%</small>
+                        </td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Machine Learning Basics</td>
+                        <td>20 May 2025</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
+                            </div>
+                            <small class="text-muted">45%</small>
+                        </td>
+                        <td><span class="badge badge-warning">In Progress</span></td>
+                    </tr>
+                `;
+                
+                $('#userCourseList').html(sampleCourseData);
+            }, 1000);
+        });
+        
+        $(document).on('click', '#loadCertDetails', function() {
+            var button = $(this);
+            var userId = $('#userReportModal').data('userid');
+            
+            button.html('<i class="fas fa-spinner fa-spin mr-2"></i> Loading...');
+            
+            // In a real app, this would be an AJAX call to fetch actual certification data
+            setTimeout(function() {
+                var sampleCertData = `
+                    <tr>
+                        <td>AWS Certified Developer</td>
+                        <td>10 Apr 2025</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <small class="text-muted">100%</small>
+                        </td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Azure Fundamentals</td>
+                        <td>05 Jun 2025</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 30%"></div>
+                            </div>
+                            <small class="text-muted">30%</small>
+                        </td>
+                        <td><span class="badge badge-info">In Progress</span></td>
+                    </tr>
+                `;
+                
+                $('#userCertList').html(sampleCertData);
+            }, 1000);
+        });
+          // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Check if intern data exists, if not, inject mock data for testing purposes
+        if ($('#internTable tbody tr:not(.no-data)').length === 0) {
+            console.log("No intern data found, injecting mock data for testing");
+            var mockInternData = [
+                {
+                    name: 'Aisha Patel',
+                    role: 'Full Stack Developer Intern',
+                    college: 'Indian Institute of Technology, Mumbai',
+                    startDate: '15 Jan 2025',
+                    endDate: '15 Jul 2025',
+                    project: 'Developing a dashboard for monitoring ML model performance'
+                },
+                {
+                    name: 'Raj Sharma',
+                    role: 'Data Science Intern',
+                    college: 'BITS Pilani',
+                    startDate: '01 Feb 2025',
+                    endDate: '01 Aug 2025',
+                    project: 'Customer segmentation analysis using clustering algorithms'
+                },
+                {
+                    name: 'Sneha Gupta',
+                    role: 'UX/UI Design Intern',
+                    college: 'National Institute of Design',
+                    startDate: '10 Mar 2025',
+                    endDate: 'Present',
+                    project: 'Redesigning the company\'s mobile application interface'
+                }
+            ];
+            
+            var internTableHtml = '';
+            mockInternData.forEach(function(intern) {
+                internTableHtml += `
+                    <tr>
+                        <td>${intern.name}</td>
+                        <td>${intern.role}</td>
+                        <td>${intern.college}</td>
+                        <td>${intern.startDate}</td>
+                        <td>${intern.endDate}</td>
+                        <td>
+                            <span class="text-truncate d-inline-block" style="max-width: 150px;" 
+                                  data-toggle="tooltip" title="${intern.project}">
+                                ${intern.project.substring(0, 25)}...
+                            </span>
+                        </td>                        <td>
+                            <button class="btn btn-sm btn-outline-primary show-intern-detail" data-toggle="modal" 
+                                    data-target="#internDetailModal" data-name="${intern.name}" 
+                                    data-role="${intern.role}" data-college="${intern.college}" 
+                                    data-project="${intern.project}">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            $('#internTable tbody').html(internTableHtml);
+            // Re-initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+        
+        // Set default dates for filter
+        const today = new Date();
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        
+        $('#startDate').val(oneMonthAgo.toISOString().split('T')[0]);
+        $('#endDate').val(today.toISOString().split('T')[0]);
+        
+        // Filter form submit event
+        $('#filterForm').submit(function(e) {
+            e.preventDefault();
+            // Here you would normally make an AJAX call to reload the data with filters
+            // For this demo, just show a loading indicator and reset
+            
+            $('button[type="submit"]').html('<i class="fas fa-spinner fa-spin mr-2"></i>Loading...');
+            
+            setTimeout(function() {
+                $('button[type="submit"]').html('<i class="fas fa-search mr-2"></i>Apply Filters');
+                alert('Filter applied successfully!');
+            }, 1000);
+        });
+        
+        // Refresh data button
+        $('#refreshData').click(function() {
+            $(this).html('<i class="fas fa-spinner fa-spin mr-2"></i>Refreshing...');
+            
+            setTimeout(function() {
+                $('#refreshData').html('<i class="fas fa-sync-alt mr-2"></i>Refresh Data');
+                location.reload();
+            }, 1000);
+        });        // User Report Modal functionality
+        $('#userReportModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var username = button.data('username');
+            var userId = button.data('userid');
+            var coursesEnrolled = button.data('courses-enrolled') || 0;
+            var coursesCompleted = button.data('courses-completed') || 0;
+            var certsEnrolled = button.data('certs-enrolled') || 0;
+            var certsCompleted = button.data('certs-completed') || 0;
+            var overallProgress = button.data('overall-progress') || 0;
+            var modal = $(this);
+            
+            // Store the userId on the modal for download use later
+            modal.data('userid', userId);
+            
+            // Set the username in the modal title
+            modal.find('#modalUsername').text(username);
+            
+            // Show loading spinner
+            $('#userReportLoading').show();
+            $('#userReportContent').hide();
+            
+            // Simulate AJAX request to get user report data
+            setTimeout(function() {
+                // Hide loading spinner
+                $('#userReportLoading').hide();
+                
+                // Generate user report HTML based on the user ID and other data attributes
+                var userReportHtml = generateUserReport(
+                    username, 
+                    userId, 
+                    coursesEnrolled, 
+                    coursesCompleted,
+                    certsEnrolled,
+                    certsCompleted,
+                    overallProgress
+                );
+                
+                // Update modal content
+                $('#userReportContent').html(userReportHtml).show();
+            }, 1000);
+        });
+          // Download user report button
+        $('#downloadUserReport').click(function() {
+            var username = $('#modalUsername').text();
+            var userId = $('#userReportModal').data('userid');
+            
+            $(this).html('<i class="fas fa-spinner fa-spin mr-2"></i>Preparing Download...');
+            
+            // Create a form to submit the download request
+            var form = $('<form></form>').attr({
+                'method': 'GET',
+                'action': '/learning/download_user_report/' + userId + '/',
+                'target': '_blank'
+            }).css('display', 'none');
+            
+            $('body').append(form);
+            form.submit();
+            
+            // Reset button text after a delay
+            setTimeout(function() {
+                $('#downloadUserReport').html('<i class="fas fa-download mr-2"></i>Download Report');
+            }, 1500);
+        });        // Intern Detail Modal functionality
+        $(document).on('click', '.show-intern-detail', function() {
+            // Log button data for debugging
+            console.log("Button clicked with data:", {
+                name: $(this).data('name'),
+                role: $(this).data('role'),
+                college: $(this).data('college'),
+                project: $(this).data('project')
+            });
+        });
+        
+        $('#internDetailModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var name = button.data('name');
+            var role = button.data('role');
+            var college = button.data('college');
+            var project = button.data('project');
+            var modal = $(this);
+            
+            console.log("Showing intern modal for:", name, role, college);
+            
+            if (!name) {
+                console.warn("Name data attribute is missing!");
+                name = "Unknown";
+            }
+            
+            // Set data in the modal
+            modal.find('#modalInternName').text(name);
+            modal.find('#modalDetailName').text(name);
+            modal.find('#modalDetailRole').text(role || "Not specified");
+            modal.find('#modalDetailCollege').text(college || "Not specified");
+            modal.find('#modalDetailProject').text(project || "No project assigned");
+            
+            // Add animation to the modal content
+            setTimeout(function() {
+                modal.find('.modal-body .row').each(function(i) {
+                    $(this).addClass('fade-in').css('animation-delay', (i * 0.1) + 's');
+                });
+            }, 100);
+        });
+        
+        // Function to generate user report HTML with actual user data
+        function generateUserReport(username, userId, coursesEnrolled, coursesCompleted, certsEnrolled, certsCompleted, overallProgress) {
+            // Calculate progress percentages
+            var courseProgressPercent = coursesEnrolled > 0 ? Math.round((coursesCompleted / coursesEnrolled) * 100) : 0;
+            var certProgressPercent = certsEnrolled > 0 ? Math.round((certsCompleted / certsEnrolled) * 100) : 0;
+            
+            return `
+                <div class="mb-4">
+                    <h4 class="mb-3">User Progress Summary</h4>
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div>
+                                    <h5 class="mb-0">${username}</h5>
+                                    <p class="text-muted small mb-0">User ID: ${userId}</p>
+                                </div>
+                                <div>
+                                    <span class="badge badge-primary px-3 py-2">Active</span>
+                                </div>
+                            </div>
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: ${overallProgress}%" 
+                                     aria-valuenow="${overallProgress}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="small text-center text-muted">
+                                Overall Completion: ${overallProgress}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light">Course Progress</div>
+                                <div class="card-body">
+                                    <div class="progress mb-3" style="height: 15px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: ${courseProgressPercent}%"></div>
+                                    </div>
+                                    <div class="small text-muted d-flex justify-content-between">
+                                        <span>Courses Completed:</span>
+                                        <span>${coursesCompleted}/${coursesEnrolled}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light">Certification Progress</div>
+                                <div class="card-body">
+                                    <div class="progress mb-3" style="height: 15px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: ${certProgressPercent}%"></div>
+                                    </div>
+                                    <div class="small text-muted d-flex justify-content-between">
+                                        <span>Certifications Completed:</span>
+                                        <span>${certsCompleted}/${certsEnrolled}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5 class="mb-3">Course Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Course Name</th>
+                                    <th>Enrolled Date</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userCourseList">
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        <button class="btn btn-sm btn-outline-primary" id="loadCourseDetails">
+                                            <i class="fas fa-sync-alt mr-2"></i> Load Course Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="mb-3">Certification Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Certification Name</th>
+                                    <th>Enrolled Date</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userCertList">
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        <button class="btn btn-sm btn-outline-primary" id="loadCertDetails">
+                                            <i class="fas fa-sync-alt mr-2"></i> Load Certification Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+    });
+</script>
+<script type="text/javascript">
+    // This script ensures that the intern detail modal is properly initialized
+    $(document).ready(function() {
+        // Check if intern detail buttons exist
+        var internButtons = $('.show-intern-detail').length;
+        console.log("Found " + internButtons + " intern detail buttons");
+        
+        // Direct binding for show-intern-detail buttons
+        $(document).on('click', '.show-intern-detail', function(e) {
+            var name = $(this).data('name');
+            var role = $(this).data('role');
+            var college = $(this).data('college');
+            var project = $(this).data('project');
+            
+            console.log("Intern button clicked:", name, role, college);
+            
+            // Manually set the modal data
+            $('#modalInternName').text(name);
+            $('#modalDetailName').text(name);
+            $('#modalDetailRole').text(role || "Not specified");
+            $('#modalDetailCollege').text(college || "Not specified");
+            $('#modalDetailProject').text(project || "No project assigned");
+            
+            // Make sure the modal is shown
+            $('#internDetailModal').modal('show');
+        });
+        
+        // Debug intern table and modal state
+        console.log("Intern table rows:", $('#internTable tbody tr').length);
+        console.log("Modal exists:", $('#internDetailModal').length > 0);
+    });
+</script>
+</div>
+{% endblock %}

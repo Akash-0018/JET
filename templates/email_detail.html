@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Email - {{ email.subject }} - JET{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'inbox' %}">Inbox</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Email Detail</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Email Sidebar -->
+        <div class="col-md-3 col-lg-2 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'email_form' %}" class="btn btn-primary btn-block rounded-0 py-3">
+                            <i class="fas fa-plus-circle mr-2"></i>Compose
+                        </a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'inbox' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-inbox mr-2"></i>Inbox
+                        </a>
+                        <a href="{% url 'sent_items' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-paper-plane mr-2"></i>Sent Items
+                        </a>
+                        <a href="{% url 'drafts' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file mr-2"></i>Drafts
+                        </a>
+                        <a href="{% url 'replies' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-reply mr-2"></i>Reply Mails
+                        </a>
+                        <a href="{% url 'templates' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-alt mr-2"></i>Templates
+                        </a>
+                        <a href="{% url 'schedule_email' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-clock mr-2"></i>Scheduled
+                        </a>
+                        <a href="{% url 'generate_ai' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-robot mr-2"></i>AI Writeup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-envelope text-primary mr-2"></i>Email Detail
+                        </h4>
+                        <div>
+                            <a href="{% url 'reply_email' email.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-reply mr-1"></i> Reply
+                            </a>
+                            <a href="{% url 'email_delete' email.id %}" class="btn btn-outline-danger btn-sm ml-2">
+                                <i class="fas fa-trash mr-1"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="email-header mb-4 pb-3 border-bottom">
+                        <h3 class="mb-3">{{ email.subject }}</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <span class="text-muted">From:</span> 
+                                    <span class="font-weight-bold">{{ email.From.username }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="text-muted">To:</span> 
+                                    <span class="font-weight-bold">{{ email.TO.username }}</span>
+                                </div>
+                                {% if email.cc_users %}
+                                <div class="mb-2">
+                                    <span class="text-muted">CC:</span> 
+                                    <span>
+                                        {% for user in email.cc_users.all %}
+                                            {{ user.username }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                {% if email.bcc_users %}
+                                <div class="mb-2">
+                                    <span class="text-muted">BCC:</span> 
+                                    <span>
+                                        {% for user in email.bcc_users.all %}
+                                            {{ user.username }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 text-md-right">
+                                <div class="text-muted">
+                                    {{ email.created_at|date:"F j, Y, g:i a" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="email-body">
+                        <div class="py-3">
+                            {{ email.message|linebreaksbr }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{% url 'inbox' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back to Inbox
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  <style>
+.back-button {
+  position: fixed;
+  top: 30px;
+  left: 5px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top:40px;
+}
+
+.back-button::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23000080'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  background-position: center;
+  background-repeat : no-repeat;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.back-button:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23ff4500'/%3E%3C/svg%3E");
+}
+h1{
+  margin-left: 30px;
+  margin-top: 20px;
+  font-size: 25px;
+  font-weight: 700;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Directory - JET{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: navy;
+        --primary-dark: #00005a;
+        --primary-light: rgba(0, 0, 128, 0.15);
+        --accent: orangered;
+        --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .user-card {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
+    }
+    
+    .user-card .card-img-top {
+        height: 160px;
+        background: linear-gradient(135deg, var(--primary-light), rgba(0, 0, 128, 0.05));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: var(--card-shadow);
+        object-fit: cover;
+    }
+    
+    .user-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .user-role {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .user-actions .btn {
+        border-radius: 50rem;
+        padding: 0.375rem 1rem;
+    }
+</style>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">User Directory</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-users mr-2 text-primary"></i>
+                            {% if department %}{{ department }} {% endif %}User Directory
+                        </h4>
+                        <div>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for user in users %}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="user-card card">
+                <div class="card-img-top">                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% elif user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'home/default-img.jpg' %}{% endif %}" 
+                         alt="Profile Picture" class="user-avatar">
+                </div>
+                <div class="card-body text-center">
+                    <h5 class="user-name">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="user-role">{{ user.profile.role|default:"JET User" }}</p>
+                    <div class="user-actions">
+                        <a href="{% url 'user_detail' user.pk %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user mr-1"></i> View Profile
+                        </a>
+                        {% if request.user == user or request.user.is_staff %}
+                        <a href="{% url 'user_update' user.pk %}" class="btn btn-sm btn-outline-primary ml-2">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle mr-2"></i>No users found in the system.
+            </div>
+        </div>
+        {% endfor %}    </div>
+
+<style>
+.user-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-left: 160px;
+}
+
+.user-container img {
+  width: 50%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.user-container h2 {
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.btn-group {
+  margin-top: 10px;
+}
+
+.btn-group button {
+  margin: 5px;
+}
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.float-right {
+  float: right;
+}
+
+.mr-2 {
+  margin-right: 20px;
+}
+
+.profile-pic {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Responsive design */
+
+@media (max-width: 768px) {
+  .user-container {
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-container {
+    width: 300px;
+  }
+}
+
+.float-right {
+  float: right;
+}
+
+.mr-2 {
+  margin-right: 20px;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn-primary {
+  background-color:navy;
+  color:white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: orangered;
+}
+
+.btn-primary a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Responsive design */
+
+@media (max-width: 768px) {
+  .btn-block {
+    width: 50%;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-block {
+    width: 100%;
+  }
+}
+
+.back-button {
+  position: fixed;
+  top: 30px;
+  left: 5px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top:40px;
+}
+
+.back-button::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23000080'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  background-position: center;
+  background-repeat : no-repeat;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.back-button:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23ff4500'/%3E%3C/svg%3E");
+}
+</style>
+{% endblock %}

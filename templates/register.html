@@ -1,0 +1,496 @@
+{% extends 'base.html' %}
+
+{% block title %}Register for JET{% endblock %}
+
+{% block head %}
+<style>
+    /* Make sure navbar is navy with white text */
+    .navbar {
+        background-color: navy !important;
+    }
+    
+    .navbar *, .navbar a, .navbar .nav-link, .navbar-brand, .navbar i, .navbar-nav .nav-link {
+        color: white !important;
+    }
+
+    /* Registration page specific styles */
+    :root {
+        --primary: navy;
+        --primary-dark: #00005a;
+        --primary-light: rgba(0, 0, 128, 0.15);
+        --secondary: orangered;
+        --secondary-dark: #cc3300;
+        --text-dark: #333333;
+        --text-muted: #6c757d;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+        --border-radius-sm: 4px;
+        --border-radius-md: 8px;
+        --border-radius-lg: 12px;
+        --transition-speed: 0.3s;
+        --transition-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    /* Card styling */
+    .registration-card {
+        background-color: white;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        transition: all var(--transition-speed) var(--transition-ease);
+    }
+    
+    .registration-header {
+        background-color: var(--primary);
+        text-align: center;
+        padding: 1.75rem 1.5rem;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .registration-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(45deg);
+        z-index: 1;
+    }
+    
+    .registration-header h2 {
+        margin: 0;
+        color: white;
+        font-weight: 700;
+        font-size: 1.75rem;
+        font-family: 'Poppins', sans-serif;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Section styling */
+    .section-header {
+        border-left: 4px solid var(--primary);
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-header h3 {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.35rem;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .section-header p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+    
+    /* Form styling */
+    .form-section {
+        background-color: var(--bg-light);
+        border-radius: var(--border-radius-md);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        transition: all var(--transition-speed) var(--transition-ease);
+    }
+    
+    .form-section:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1rem;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius-sm);
+        font-size: 1rem;
+        transition: all var(--transition-speed) var(--transition-ease);
+        background-color: #f9fafc;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.15);
+        outline: none;
+        background-color: white;
+    }
+    
+    /* Password section styling */
+    .password-section {
+        background-color: var(--bg-light);
+        border-radius: var(--border-radius-md);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .password-section h3 {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .password-requirements {
+        background-color: rgba(0, 0, 128, 0.05);
+        padding: 1rem;
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 1.5rem;
+        border-left: 3px solid var(--primary);
+    }
+    
+    .password-requirements p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+    }
+    
+    /* Input with icon styling */
+    .input-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-container .form-control {
+        padding-right: 2.5rem;
+    }
+    
+    .eye-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--primary);
+        transition: color var(--transition-speed) var(--transition-ease);
+    }
+    
+    .eye-icon:hover {
+        color: var(--secondary);
+    }
+    
+    /* Button styling */
+    .btn {
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-sm);
+        transition: all var(--transition-speed) var(--transition-ease);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary) !important;
+        color: white !important;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark) !important;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+        background-color: var(--secondary) !important;
+        color: white !important;
+    }
+    
+    .btn-secondary:hover {
+        background-color: var(--secondary-dark) !important;
+    }
+    
+    /* Button container */
+    .button-container {
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+        margin-top: 1rem;
+    }
+    
+    /* Error messages */
+    .text-danger {
+        color: #dc3545;
+    }
+    
+    .text-danger i {
+        margin-right: 0.25rem;
+    }
+    
+    /* Required field indicator */
+    .required-indicator {
+        color: #dc3545;
+        font-size: 0.7rem;
+        vertical-align: top;
+        margin-right: 0.25rem;
+    }
+    
+    /* Back button */
+    .back-button-container {
+        margin-top: 1rem;
+        margin-bottom: 3rem;
+    }
+    
+    .back-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .back-button:hover {
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* Animation */
+    @keyframes slideInUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .slide-in {
+        animation: slideInUp 0.5s var(--transition-ease) forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="registration-card slide-in">
+                <div class="registration-header">
+                    <h2>
+                        <i class="fas fa-user-plus mr-2"></i>Create Your JET Account
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <p class="lead mb-0" style="font-weight: 500; color: var(--text-dark);">Join our platform and start your learning journey</p>
+                        <small class="text-muted">All fields marked with <i class="fas fa-asterisk text-danger" style="font-size: 0.7rem;"></i> are required</small>
+                    </div>                    <form method="post" enctype="multipart/form-data" class="registration-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-user mr-2"></i>Personal Details</h3>
+                                    <p>Your basic information for account creation</p>
+                                </div>
+                                <div class="form-section">
+                                    {% for field in personal_details_form %}
+                                        <div class="form-group">
+                                            <label for="{{ field.id_for_label }}" class="form-label">
+                                                {% if field.field.required %}
+                                                    <i class="fas fa-asterisk text-danger required-indicator"></i>
+                                                {% endif %}
+                                                {{ field.label }}
+                                            </label>
+                                            {{ field|safe }}
+                                            {% if field.errors %}
+                                                <div class="text-danger mt-2">
+                                                    {% for error in field.errors %}
+                                                        <small><i class="fas fa-exclamation-circle"></i>{{ error }}</small>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>                            <div class="col-md-12 mb-4">
+                                <div class="section-header">
+                                    <h3><i class="fas fa-briefcase mr-2"></i>Professional Details</h3>
+                                    <p>Information about your work and professional background</p>
+                                </div>
+                                <div class="form-section">
+                                    {% for field in professional_details_form %}
+                                        <div class="form-group">
+                                            <label for="{{ field.id_for_label }}" class="form-label">
+                                                {% if field.field.required %}
+                                                    <i class="fas fa-asterisk text-danger required-indicator"></i>
+                                                {% endif %}
+                                                {{ field.label }}
+                                            </label>
+                                            {{ field|safe }}
+                                            {% if field.errors %}
+                                                <div class="text-danger mt-2">
+                                                    {% for error in field.errors %}
+                                                        <small><i class="fas fa-exclamation-circle"></i>{{ error }}</small>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <!-- New Designation Dropdown -->
+                                    
+                                </div>
+                            </div>                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <div class="password-section">
+                                    <h3><i class="fas fa-lock mr-2"></i>Password</h3>
+                                    <div class="password-requirements">
+                                        <p><i class="fas fa-info-circle mr-2"></i>The password should have a minimum of 8 characters, include at least one uppercase letter (A to Z), one lowercase letter (a to z), one number (0 to 9), and one special character (!, @, #, $, etc.).</p>
+                                    </div>
+                                    
+                                    <!-- Password Field -->
+                                    <div class="form-group">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-asterisk text-danger required-indicator"></i>
+                                            Password
+                                        </label>
+                                        <div class="input-container">
+                                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter a secure password">
+                                            <span class="eye-icon" id="togglePassword">
+                                                <i class="fas fa-eye" id="eyeIcon"></i>
+                                            </span>
+                                        </div>
+                                        {% if user_registration_form.password.errors %}
+                                            <div class="text-danger mt-2">
+                                                {% for error in user_registration_form.password.errors %}
+                                                    <small><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Confirm Password Field -->
+                                    <div class="form-group">
+                                        <label for="confirm_password" class="form-label">
+                                            <i class="fas fa-asterisk text-danger required-indicator"></i>
+                                            Confirm Password
+                                        </label>
+                                        <div class="input-container">
+                                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your password">
+                                            <span class="eye-icon" id="toggleConfirmPassword">
+                                                <i class="fas fa-eye" id="confirmEyeIcon"></i>
+                                            </span>
+                                        </div>
+                                        {% if user_registration_form.confirm_password.errors %}
+                                            <div class="text-danger mt-2">
+                                                {% for error in user_registration_form.confirm_password.errors %}
+                                                    <small><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        <div class="button-container">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus mr-2"></i>Register
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>    </div>
+</div>
+
+<!-- Script for navbar color and password toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Force navbar to be navy with white text
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            navbar.style.backgroundColor = 'navy';
+            
+            // Make all navbar elements white
+            const navbarElements = navbar.querySelectorAll('*');
+            navbarElements.forEach(function(el) {
+                // Skip the sign-up button if it exists
+                if (!el.closest('#signupBtn')) {
+                    el.style.color = 'white';
+                }
+            });
+        }
+        
+        // Password toggle functionality
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Confirm password toggle functionality
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const confirmEyeIcon = document.getElementById('confirmEyeIcon');
+        
+        if (toggleConfirmPassword && confirmPasswordInput && confirmEyeIcon) {
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordInput.setAttribute('type', type);
+                confirmEyeIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Apply higher z-index to navbar to ensure it's above all content
+        if (navbar) {
+            navbar.style.zIndex = '1030';
+        }
+        
+        // Add subtle animation to input fields
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(function(control) {
+            control.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    });
+</script>
+{% endblock %}

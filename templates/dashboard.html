@@ -1,0 +1,1016 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ user.username }}'s Dashboard - JET{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --primary: navy;
+    --primary-dark: #00005a;
+    --primary-light: rgba(0, 0, 128, 0.15);
+    --accent: orangered;
+    --accent-light: rgba(255, 69, 0, 0.15);
+    --card-transition: all 0.25s ease;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --card-hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background-color: #f8f9fa;
+  }
+
+  .breadcrumb {
+    background-color: #fff;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .breadcrumb-item a {
+    color: var(--primary);
+  }
+  
+  .breadcrumb-item.active {
+    color: #6c757d;
+  }
+  
+  .card {
+    border: none;
+    transition: var(--card-transition);
+    margin-bottom: 1.5rem;
+  }
+  
+  .card:hover {
+    box-shadow: var(--card-hover-shadow);
+  }
+  
+  .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.25rem;
+  }
+  
+  .sidebar-card {
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+    .avatar-container {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    position: relative;
+  }
+  
+  .avatar-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+  
+  .avatar-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: var(--card-transition);
+    position: relative;
+  }
+  
+  .avatar-img::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 69, 0, 0.4);
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .avatar-img:hover::after {
+    opacity: 1;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.05); opacity: 0.2; }
+    100% { transform: scale(1); opacity: 0.5; }
+  }
+  
+  .avatar-img:hover {
+    transform: scale(1.05);
+    border-color: white;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .user-info {
+    text-align: center;
+    color: white;
+    margin: 1.25rem 0;
+  }
+
+  .user-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+  }
+
+  .user-role {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    background: linear-gradient(90deg, var(--accent), #ffaa80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+  }
+    .sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.875rem 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    border-left: 4px solid transparent;
+    transition: var(--card-transition);
+    margin: 0.35rem 0;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .sidebar-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0);
+    transition: var(--card-transition);
+    z-index: -1;
+  }
+  
+  .sidebar-link:hover::before, .sidebar-link.active::before {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  .sidebar-link:hover, .sidebar-link.active {
+    color: white;
+    border-left-color: var(--accent);
+    transform: translateX(6px);
+  }
+  
+  .sidebar-link i {
+    width: 24px;
+    margin-right: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar-link:hover i, .sidebar-link.active i {
+    transform: scale(1.2);
+    color: var(--accent);
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .stats-card {
+    background-color: #fff;
+    padding: 1.25rem;
+    border-radius: 0.25rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+  }
+  
+  .stats-icon {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-radius: 0.25rem;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+  }
+  
+  .stats-info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--primary);
+  }
+  
+  .stats-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.875rem;
+  }
+  
+  /* Color variations for stats cards */
+  .bg-primary-light {
+    background-color: rgba(0, 0, 128, 0.1) !important;
+  }
+  
+  .bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+  }
+  
+  .bg-warning-light {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+  }
+  
+  .bg-info-light {
+    background-color: rgba(23, 162, 184, 0.1) !important;
+  }
+  
+  /* Enhanced progress bars */
+  .progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    margin-bottom: 4px;
+  }
+  
+  .progress-bar {
+    border-radius: 3px;
+  }
+  
+  .progress-bar.bg-orange {
+    background-color: var(--accent) !important;
+  }
+  
+  .progress-bar.bg-blue {
+    background-color: var(--primary) !important;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  
+  .table th {
+    font-weight: 600;
+    border-top: none;
+  }
+  
+  .avatar-sm {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+  }
+
+  /* Animation styles for dashboard */
+  .slide-in-left {
+    animation: slideInLeft 0.6s ease-out forwards;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+  
+  .slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+  
+  .slide-in-up {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Staggered animations for stats cards */
+  .stats-grid .stats-card:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  
+  .stats-grid .stats-card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .stats-grid .stats-card:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  
+  .stats-grid .stats-card:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  
+  /* Course cards animations */
+  .course-container .card, .certification-container .card {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Course progress styling */
+  .course-container .card:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  
+  .course-container .card:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  
+  .course-container .card:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  .certification-container .card:nth-child(1) {
+    animation-delay: 0.5s;
+  }
+  
+  .certification-container .card:nth-child(2) {
+    animation-delay: 0.6s;
+  }
+  
+  .certification-container .card:nth-child(3) {
+    animation-delay: 0.7s;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .sidebar {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+
+    .stats-card {
+      padding: 1.25rem;
+    }
+
+    .stats-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 1.25rem;
+    }
+
+    .stats-info h3 {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .stats-card {
+      background: #2a2a2a;
+    }
+
+    .stats-info h3 {
+      color: #fff;
+    }
+
+    .stats-info p {
+      color: #bbb;
+    }
+  }
+
+  /* Modern floating button styles */
+.floating-button, .btn-primary.rounded-circle.position-fixed {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #6441a5, #2a0845); /* Gaming purple gradient */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  animation: game-pulse 2s infinite;
+}
+
+@keyframes game-pulse {
+  0% { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); }
+  50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(100, 65, 165, 0.2); }
+  100% { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); }
+}
+
+.floating-button:hover, .btn-primary.rounded-circle.position-fixed:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #ff416c, #ff4b2b); /* Energetic game gradient */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary.rounded-circle.position-fixed i {
+  font-size: 1.5rem;
+  animation: game-icon-bounce 2s infinite;
+}
+
+@keyframes game-icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.floating-button::before {
+  content: "+";
+  font-size: 2.2rem;
+  font-weight: 300;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.floating-button:hover::before {
+  transform: rotate(90deg);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.text-primary {
+    color: var(--primary) !important;
+  }
+  
+  .bg-primary {
+    background-color: var(--primary) !important;
+  }
+  
+  .bg-primary-light {
+    background-color: rgba(0, 0, 128, 0.1) !important;
+  }
+  
+  .bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+  }
+  
+  .bg-warning-light {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+  }
+  
+  .bg-info-light {
+    background-color: rgba(23, 162, 184, 0.1) !important;
+  }
+  
+  .text-success {
+    color: #28a745 !important;
+  }
+  
+  .text-warning {
+    color: #ffc107 !important;
+  }
+  
+  .text-info {
+    color: #17a2b8 !important;
+  }
+  
+  .badge-primary {
+    background-color: var(--primary);
+  }
+  
+  .badge-success {
+    background-color: #28a745;
+  }
+  
+  .badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  
+  .badge-info {
+    background-color: #17a2b8;
+  }
+  
+  .progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e9ecef;
+    margin-bottom: 4px;
+  }
+  
+  .progress-bar {
+    border-radius: 3px;
+  }
+  
+  .progress-bar.bg-orange {
+    background-color: var(--accent) !important;
+  }
+  
+  .progress-bar.bg-blue {
+    background-color: var(--primary) !important;
+  }
+  .list-group-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }.nav-tabs {
+    border-bottom: none;
+  }
+  
+  .nav-tabs .nav-link {
+    color: white; /* White text on navy background */
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+    transition: color 0.3s ease;
+    font-weight: 600;
+  }
+  
+  .nav-tabs .nav-link:hover {
+    color: var(--accent); /* Orange color on hover */
+    border-color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .nav-tabs .nav-link.active {
+    color: white; /* White text for active tab */
+    background-color: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid white;
+    font-weight: 700;
+  }
+  
+  .nav-tabs .nav-link.active:hover {
+    color: var(--accent); /* Orange color on hover even for active tab */
+    border-bottom-color: var(--accent);
+  }
+
+  .nav-tabs .nav-link i {
+    transition: color 0.3s ease;
+  }
+  
+  .nav-tabs .nav-link:hover i,
+  .nav-tabs .nav-link.active:hover i {
+    color: var(--accent); /* Orange color for icons on hover */
+  }
+  
+  .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+  }
+  
+  .btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+    .btn-outline-primary:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }  .card-header-tabs {
+    margin-bottom: -0.5rem;
+    border-bottom: none;
+  }
+
+  
+</style>
+
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 mb-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div class="user-profile text-center p-4">
+                        <div class="position-relative mb-3 mx-auto" style="width: 100px;">                            <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% elif user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'home/default-img.jpg' %}{% endif %}" 
+                                alt="Profile" class="rounded-circle img-fluid border" style="width: 100px; height: 100px; object-fit: cover;">
+                            <span class="badge bg-success position-absolute" style="bottom: 0; right: 0;">Online</span>
+                        </div>
+                        <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                        <p class="text-muted small">{{ user.profile.role|default:"Learner" }}</p>
+                        <a href="{% url 'user_detail' user.id %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+              <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <!-- Common links for all users -->
+                        <a href="{% url 'home' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-home mr-2"></i> Home
+                        </a>
+                        
+                        <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-th-large mr-2"></i> Dashboard
+                        </a>
+                        {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'inbox' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-envelope mr-2"></i> Email
+                            {% if unread_count %}
+                            <span class="badge badge-primary badge-pill ml-1">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shield-alt mr-2"></i> Admin Controls
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'leaderboard' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-trophy mr-2"></i> Leaderboard
+                        </a>
+                        <a href="{% url 'user_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users mr-2"></i> User List
+                        </a>
+                        <a href="{% url 'help' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-question-circle mr-2"></i> Help
+                        </a>
+                        <!-- Logout for everyone -->
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <!-- Welcome Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-1">Welcome, {{ user.first_name|default:user.username }}</h4>
+                            <p class="text-muted mb-0">Here's what's happening with your learning journey today.</p>
+                        </div>                        <div>
+                            <a href="{% url 'user_update' user.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-cog mr-1"></i> Update Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle text-primary bg-primary-light p-3 mr-3">
+                                    <i class="fas fa-book fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">{{ enrolled_courses|length }}</h5>
+                                    <p class="text-muted mb-0">Courses Enrolled</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle text-success bg-success-light p-3 mr-3">
+                                    <i class="fas fa-certificate fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">{{ certifications|length }}</h5>
+                                    <p class="text-muted mb-0">Certifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 mb-4 mb-md-0">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle text-warning bg-warning-light p-3 mr-3">
+                                    <i class="fas fa-tasks fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">75%</h5>
+                                    <p class="text-muted mb-0">Avg. Completion</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle text-info bg-info-light p-3 mr-3">
+                                    <i class="fas fa-trophy fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">180</h5>
+                                    <p class="text-muted mb-0">Points Earned</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            <!-- Main Content Tabs -->
+            <div class="card shadow-sm">
+                <div class="card-header" style="background-color: var(--primary);">
+                    <ul class="nav nav-tabs card-header-tabs" id="dashboardTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="courses-tab" data-toggle="tab" href="#courses" role="tab" aria-controls="courses" aria-selected="true">
+                                <i class="fas fa-book mr-1"></i> My Courses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="certifications-tab" data-toggle="tab" href="#certifications" role="tab" aria-controls="certifications" aria-selected="false">
+                                <i class="fas fa-certificate mr-1"></i> Certifications
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="activities-tab" data-toggle="tab" href="#activities" role="tab" aria-controls="activities" aria-selected="false">
+                                <i class="fas fa-chart-line mr-1"></i> Recent Activities
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="dashboardTabsContent">
+                        <!-- Courses Tab -->
+                        <div class="tab-pane fade show active" id="courses" role="tabpanel" aria-labelledby="courses-tab">
+                            {% if enrolled_courses %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Course</th>
+                                                <th>Start Date</th>
+                                                <th>Status</th>
+                                                <th>Progress</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for course in enrolled_courses %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="bg-primary-light p-2 rounded mr-3">
+                                                                <i class="fas fa-book text-primary"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">{{ course.course.name }}</h6>
+                                                                <small class="text-muted">{{ course.course.description|truncatechars:60 }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ course.created_at|date:"M d, Y" }}</td>
+                                                    <td>
+                                                        {% if course.course_completed_at %}
+                                                            <span class="badge badge-success">Completed</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning">In Progress</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td width="150">
+                                                        <div class="progress" style="height: 6px;">
+                                                            <div class="progress-bar bg-orange" role="progressbar" style="width: {{ course.course_progress }}%" aria-valuenow="{{ course.course_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <small class="text-muted">{{ course.course_progress }}% complete</small>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Continue</button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <img src="{% static 'home/empty-courses.svg' %}" alt="No Courses" style="width: 120px; opacity: 0.5;" class="mb-3">
+                                    <h5>No courses enrolled</h5>
+                                    <p class="text-muted">You haven't enrolled in any courses yet.</p>
+                                    <a href="#" class="btn btn-primary">Browse Courses</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Certifications Tab -->
+                        <div class="tab-pane fade" id="certifications" role="tabpanel" aria-labelledby="certifications-tab">
+                            {% if certifications %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Certification</th>
+                                                <th>Issued Date</th>
+                                                <th>Status</th>
+                                                <th>Progress</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for certification in certifications %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="bg-primary-light p-2 rounded mr-3">
+                                                                <i class="fas fa-certificate text-primary"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">{{ certification.certification.name }}</h6>
+                                                                <small class="text-muted">{{ certification.certification.description|truncatechars:60 }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ certification.created_at|date:"M d, Y" }}</td>
+                                                    <td>
+                                                        {% if certification.certification_completed_at %}
+                                                            <span class="badge badge-success">Completed</span>
+                                                        {% else %}
+                                                            <span class="badge badge-info">In Progress</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td width="150">
+                                                        <div class="progress" style="height: 6px;">
+                                                            <div class="progress-bar bg-blue" role="progressbar" style="width: {{ certification.certification_progress }}%" aria-valuenow="{{ certification.certification_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <small class="text-muted">{{ certification.certification_progress }}% complete</small>
+                                                    </td>
+                                                    <td>
+                                                        {% if certification.certification_completed_at %}
+                                                            <button class="btn btn-sm btn-outline-success">View Certificate</button>
+                                                        {% else %}
+                                                            <button class="btn btn-sm btn-outline-primary">Continue</button>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <img src="{% static 'home/empty-certifications.svg' %}" alt="No Certifications" style="width: 120px; opacity: 0.5;" class="mb-3">
+                                    <h5>No certifications yet</h5>
+                                    <p class="text-muted">You haven't enrolled in any certification programs yet.</p>
+                                    <a href="#" class="btn btn-primary">Browse Certifications</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Activities Tab -->
+                        <div class="tab-pane fade" id="activities" role="tabpanel" aria-labelledby="activities-tab">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1">Completed "Introduction to Machine Learning" module</h6>
+                                            <p class="mb-1 text-muted">You've earned 15 points</p>
+                                        </div>
+                                        <small class="text-muted">3 days ago</small>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1">Enrolled in "Advanced Python Programming"</h6>
+                                            <p class="mb-1 text-muted">New course added to your learning path</p>
+                                        </div>
+                                        <small class="text-muted">1 week ago</small>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1">Earned "Python Basics" certificate</h6>
+                                            <p class="mb-1 text-muted">Congratulations on completing the course!</p>
+                                        </div>
+                                        <small class="text-muted">2 weeks ago</small>
+                                    </div>
+                                </li>
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1">Received feedback on assignment</h6>
+                                            <p class="mb-1 text-muted">Your instructor has reviewed your submission</p>
+                                        </div>
+                                        <small class="text-muted">3 weeks ago</small>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="text-center mt-3">
+                                <a href="#" class="btn btn-sm btn-outline-primary">View All Activities</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<a href="{% url 'bingo' %}" class="btn btn-primary rounded-circle position-fixed shadow" style="bottom: 30px; right: 30px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;" data-toggle="tooltip" title="Play Games">
+    <i class="fas fa-gamepad"></i>
+</a>
+
+<script>
+    $(document).ready(function() {
+        // Initialize tabs
+        $('#dashboardTabs a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+        
+        // Tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+      {% endblock %}

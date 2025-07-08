@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}Compose Email - JET{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'inbox' %}">Inbox</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Compose Email</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Email Sidebar -->
+        <div class="col-md-3 col-lg-2 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'email_form' %}" class="btn btn-primary btn-block rounded-0 py-3 active">
+                            <i class="fas fa-plus-circle mr-2"></i>Compose
+                        </a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'inbox' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-inbox mr-2"></i>Inbox
+                        </a>
+                        <a href="{% url 'sent_items' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-paper-plane mr-2"></i>Sent Items
+                        </a>
+                        <a href="{% url 'drafts' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file mr-2"></i>Drafts
+                        </a>
+                        <a href="{% url 'replies' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-reply mr-2"></i>Reply Mails
+                        </a>
+                        <a href="{% url 'templates' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-alt mr-2"></i>Templates
+                        </a>
+                        <a href="{% url 'schedule_email' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-clock mr-2"></i>Scheduled
+                        </a>
+                        <a href="{% url 'generate_ai' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-robot mr-2"></i>AI Writeup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit text-primary mr-2"></i>Compose Email
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            {% if field.name != 'cc_users' and field.name != 'bcc_users' %}
+                                <div class="form-group row">
+                                    <label for="{{ field.id_for_label }}" class="col-sm-2 col-form-label">{{ field.label }}</label>
+                                    <div class="col-sm-10">
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <div class="form-group row">
+                            <label for="cc_users" class="col-sm-2 col-form-label">CC</label>
+                            <div class="col-sm-10">
+                                <select class="form-control select2" name="cc_users" multiple="multiple" id="cc_users">
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="bcc_users" class="col-sm-2 col-form-label">BCC</label>
+                            <div class="col-sm-10">
+                                <select class="form-control select2" name="bcc_users" multiple="multiple" id="bcc_users">
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        {% if template_type %}
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Selected Template</label>
+                            <div class="col-sm-10">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="card-text">{{ template.content }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if use_generated_text %}
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">AI-Generated Content</label>
+                            <div class="col-sm-10">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p class="card-text">{{ generated_text }}</p>
+                                    </div>
+                                    <div class="card-footer bg-white">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="useAiContent()">
+                                            <i class="fas fa-magic mr-2"></i>Insert into message
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-10 offset-sm-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane mr-2"></i>Send Email
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary ml-2" onclick="window.location.href='{% url 'inbox' %}'">
+                                    <i class="fas fa-times mr-2"></i>Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hide back button as we're using breadcrumbs now */
+    .back-button {
+        display: none;
+    }
+    
+    textarea {
+        min-height: 200px;
+    }
+    
+    .select2-container .select2-selection--multiple {
+        min-height: 38px;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize select2 for user selections
+        $('.select2').select2({
+            placeholder: 'Select users',
+            width: '100%'
+        });
+        
+        // Add automatic textarea resizing
+        $('textarea').on('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+    
+    function useAiContent() {
+        const aiContent = `{{ generated_text|escapejs }}`;
+        const messageField = document.getElementById('id_message');
+        messageField.value = aiContent;
+        messageField.style.height = 'auto';
+        messageField.style.height = (messageField.scrollHeight) + 'px';
+    }
+</script>
+{% endblock %}

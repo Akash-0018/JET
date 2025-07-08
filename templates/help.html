@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}Help & Support - JET{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light py-2 px-3 rounded shadow-sm">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Help & Support</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="d-flex align-items-center">
+                <div class="icon-circle bg-primary-light mr-3">
+                    <i class="fas fa-question-circle text-primary"></i>
+                </div>
+                <h1 class="h2 mb-0">How Can We Help You?</h1>
+            </div>
+            <p class="lead text-muted mt-2">Find answers to common questions about the JET platform</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4 border-bottom pb-3">Frequently Asked Questions</h2>
+                    
+                    <div class="accordion" id="helpAccordion">
+                        <!-- FAQ Item 1 -->
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-header bg-light border-0" id="headingOne">
+                                <h3 class="mb-0">
+                                    <button class="btn btn-link text-left text-primary w-100 d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        <span><i class="fas fa-chevron-right mr-2"></i> What is the purpose of the AI generator?</span>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </h3>
+                            </div>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#helpAccordion">
+                                <div class="card-body">
+                                    <p>This AI generator is designed to help users generate email responses based on a given subject and message. It uses advanced natural language processing to create contextually relevant responses.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 2 -->
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-header bg-light border-0" id="headingTwo">
+                                <h3 class="mb-0">
+                                    <button class="btn btn-link text-left text-primary w-100 collapsed d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        <span><i class="fas fa-chevron-right mr-2"></i> How do I use the AI generator?</span>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </h3>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#helpAccordion">
+                                <div class="card-body">
+                                    <p>Using the AI generator is simple:</p>
+                                    <ol>
+                                        <li class="mb-2">Enter a subject and message in the input fields</li>
+                                        <li class="mb-2">Click the "Generate Response" button</li>
+                                        <li class="mb-2">The AI generator will produce a response based on the input</li>
+                                        <li class="mb-2">You can edit the generated response as needed before sending</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 3 -->
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-header bg-light border-0" id="headingThree">
+                                <h3 class="mb-0">
+                                    <button class="btn btn-link text-left text-primary w-100 collapsed d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        <span><i class="fas fa-chevron-right mr-2"></i> What if I encounter an error?</span>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </h3>
+                            </div>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#helpAccordion">
+                                <div class="card-body">
+                                    <p>If you encounter an error, please check the following:</p>
+                                    <ul>
+                                        <li class="mb-2">Verify that all required input fields are filled out correctly</li>
+                                        <li class="mb-2">Check your internet connection</li>
+                                        <li class="mb-2">Try refreshing the page and attempting again</li>
+                                    </ul>
+                                    <p>If the issue persists, please contact our support team for assistance.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 4 -->
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-header bg-light border-0" id="headingFour">
+                                <h3 class="mb-0">
+                                    <button class="btn btn-link text-left text-primary w-100 collapsed d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        <span><i class="fas fa-chevron-right mr-2"></i> How to access other JET platform features?</span>
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </h3>
+                            </div>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#helpAccordion">
+                                <div class="card-body">
+                                    <p>To access other JET platform features:</p>
+                                    <ul>
+                                        <li class="mb-2">Use the navigation menu at the top of the page</li>
+                                        <li class="mb-2">Check your dashboard for personalized recommendations</li>
+                                        <li class="mb-2">Access training modules from the sidebar menu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="h5 mb-4">Need More Help?</h3>
+                    <p>If you're facing any other issues or have questions not covered in our FAQ, please don't hesitate to contact our support team.</p>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-circle bg-primary-light mr-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6 mb-1">Email Support</h4>
+                            <p class="mb-0"><a href="mailto:support@emergerteh.com" class="text-primary">training.management@emergertech.com</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-circle bg-primary-light mr-3">
+                            <i class="fas fa-phone-alt text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6 mb-1">Phone Support</h4>
+                            <p class="mb-0">+91 98434 64180</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle bg-primary-light mr-3">
+                            <i class="fas fa-comments text-primary"></i>
+                        </div>
+                        <div>
+                            <h4 class="h6 mb-1">Live Chat</h4>
+                            <p class="mb-0">Available 9 AM - 5 PM IST</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    
+    .accordion .card-header {
+        padding: 0.75rem 1.25rem;
+        cursor: pointer;
+    }
+    
+    .accordion .btn-link {
+        text-decoration: none;
+        font-weight: 600;
+        color: var(--primary);
+        padding: 0;
+    }
+    
+    .accordion .btn-link:hover,
+    .accordion .btn-link:focus {
+        text-decoration: none;
+        box-shadow: none;
+    }
+    
+    .accordion .btn-link.collapsed i.fas.fa-plus:before {
+        content: "\f067";
+    }
+    
+    .accordion .btn-link:not(.collapsed) i.fas.fa-plus:before {
+        content: "\f068";
+    }
+    
+    .accordion .card {
+        transition: all 0.3s ease;
+    }
+    
+    .accordion .card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Update plus/minus icons on show/hide only
+        $('#helpAccordion .collapse').on('show.bs.collapse', function() {
+            $(this).prev('.card-header').find('.fas.fa-plus').removeClass('fa-plus').addClass('fa-minus');
+        }).on('hide.bs.collapse', function() {
+            $(this).prev('.card-header').find('.fas.fa-minus').removeClass('fa-minus').addClass('fa-plus');
+        });
+    });
+</script>
+<style>
+.text{
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 20px;
+}
+.back-button {
+  position: fixed;
+  top: 30px;
+  left: 5px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top:40px;
+}
+
+.back-button::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23000080'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  background-position: center;
+  background-repeat : no-repeat;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.back-button:hover::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z' fill='%23ff4500'/%3E%3C/svg%3E");
+}
+</style>
+{% endblock %}
